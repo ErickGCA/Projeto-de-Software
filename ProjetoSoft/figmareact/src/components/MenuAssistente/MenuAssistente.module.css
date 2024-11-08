@@ -1,0 +1,220 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  max-width: 958px;
+  padding: 1px 0;
+  margin: 0 auto;
+  transform: scale(1.2);
+}
+
+@media (max-width: 991px) {
+  .container {
+    width: 60%;
+  }
+}
+.card {
+  border-radius: 16px;
+  background-color: #fff;
+  box-shadow: 5px 4px 10px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  padding: 0px;
+  box-sizing: border-box; /* Garante que o padding seja incluído na largura */
+}
+
+@media (max-width: 991px) {
+  .card {
+    max-width: 100%;
+    padding-right: 80px;
+    padding-left: 0px; /* Adiciona padding lateral */
+  }
+}
+
+.content {
+  gap: 20px;
+  display: flex;
+}
+
+@media (max-width: 991px) {
+  .content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  line-height: normal;
+  width: 40%;
+  margin-left: 0;
+}
+
+@media (max-width: 991px) {
+  .column {
+    width: 100%;
+  }
+}
+
+.sidebarContainer {
+  border-radius: 16px 0 0 16px;
+  background: linear-gradient(#67ae37, #4a8920);
+  display: flex;
+  flex-grow: 1;
+  padding-bottom: 30%;
+  flex-direction: column;
+  color: #fff;
+  text-align: center;
+  width: 65%;
+  font: 800 20px Inter, sans-serif;
+  box-sizing: border-box; /* Inclui o padding dentro da largura */
+}
+
+@media (max-width: 991px) {
+  .sidebarContainer {
+    margin-top: 20px;
+    padding: 0px; /* Ajusta o padding para dispositivos menores */
+    width: 100%;
+    margin-left: 40px;
+  }
+}
+
+.logo {
+  aspect-ratio: 3.38;
+  object-fit: contain;
+  object-position: center;
+  width: 100%;
+  border-radius: 16px 0 0 0;
+  z-index: 10;
+  background-color: #fff;
+}
+
+@media (max-width: 991px) {
+  .logo {
+    width: 100%;
+  }
+}
+
+.sidebarTitle {
+  align-self: center;
+  margin-top: 70%; /* Ajusta o espaçamento */
+  margin-left: 0px;
+  text-align: center;
+  padding: 0;
+  font-size: 24px; /* Tamanho da fonte */
+}
+
+.sidebarTitle {
+  margin-top: 20px; /* Ajuste o espaçamento acima do título */
+  font-size: 24px;
+  text-align: center; /* Centraliza o título horizontalmente */
+  position: relative; /* Permite usar propriedades como 'top', 'left' */
+  top: 30%; /* Ajusta a posição vertical do título */
+}
+
+@media (max-width: 991px) {
+  .sidebarTitle {
+    margin-top: 40px;
+    top: 0;
+  }
+}
+
+.menuContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centraliza os itens do menu */
+  text-align: center;
+  margin: 0 auto;
+  font: 800 15px Inter, sans-serif;
+  margin-bottom: 5;
+}
+
+@media (max-width: 991px) {
+  .menuContainer {
+    padding-bottom: 20px;
+    padding-left: 25px;
+  }
+}
+.menuItem {
+  border-radius: 20px;
+  background-color: #fff;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  padding: 5% 40px; /* Aumenta o padding interno dos botões */
+  border: 1px solid #4f9122;
+  margin-top: 10%;
+  transition: all 0.3s ease;
+  width: 100%; /* Garante que os botões não ocupem toda a largura */
+  text-align: center;
+  box-sizing: border-box;
+  margin-bottom: 5;
+}
+
+.menuItem:first-child {
+  margin-top: 5;
+}
+
+@media (max-width: 991px) {
+  .menuItem {
+    width: 90%; /* Ajusta a largura para dispositivos menores */
+    padding: 10px 20px;
+    margin-left: 50px;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 600px) {
+  .container {
+    transform: scale(1);
+    padding: 0;
+  }
+
+  .sidebarContainer {
+    padding-bottom: 50px;
+  }
+
+  .logo {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .menuItem {
+    width: 100%; /* Botões ocupam toda a largura em telas muito pequenas */
+    padding: 10px 15px;
+    font-size: 14px;
+  }
+}
+
+.backButton {
+  background-color: transparent; /* Cor de fundo transparente */
+  color: #ffffff; /* Cor do texto suave (cinza) */
+  border: 1px solid #ffffff; /* Borda fina e suave */
+
+  padding: 2px 8px; /* Menos espaço interno para diminuir a largura */
+  font-size: 12px; /* Tamanho pequeno da fonte */
+  cursor: pointer; /* Mão ao passar o mouse */
+  margin-top: 6px; /* Espaçamento acima do botão */
+  max-width: 60px; /* Define uma largura máxima */
+  text-align: center; /* Centraliza o texto */
+  display: inline-block; /* Para garantir que a largura se ajuste ao conteúdo */
+  transition: background-color 0.3s, color 0.3s; /* Transição suave */
+  position: relative;
+  bottom: 92px;
+}
+
+.backButton:hover {
+  background-color: #4f9122; /* Cor suave ao passar o mouse */
+  color: #ffffff; /* Cor do texto ao passar o mouse */
+}

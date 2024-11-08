@@ -1,0 +1,227 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  transform: scale(0.9);
+}
+
+.background {
+  background-color: #ffffff;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1%;
+}
+
+@media (max-width: 991px) {
+  .background {
+    max-width: 100%;
+    padding: 50px 20px;
+  }
+}
+
+.formWrapper {
+  border-radius: 16px;
+  background-color: #fff;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  display: flex;
+  width: 80%;
+
+  max-width: 100%;
+}
+
+@media (max-width: 1400px) {
+  .formWrapper {
+    margin-bottom: 10px;
+    padding-right: 20px;
+    width: 100%;
+  }
+}
+
+.sidebar {
+  border-radius: 20px 0 0 16px;
+  background: linear-gradient(#67ae37, #4a8920);
+  display: flex;
+
+  flex-direction: column;
+  color: #fff;
+  text-align: center;
+
+  font: 800 20px Inter, sans-serif;
+}
+
+@media (max-width: 991px) {
+  .sidebar {
+    padding-bottom: 10%;
+    width: 85%;
+    padding-left: 51%;
+    margin-left: 60px;
+    margin-right: 60px;
+  }
+}
+
+.logo {
+  aspect-ratio: 3.38;
+  object-fit: contain;
+  object-position: center;
+  width: 320px;
+  border-radius: 16px 0 0 0;
+
+  background-color: #fff;
+}
+
+@media (max-width: 991px) {
+  .logo {
+    width: 100%;
+    position: relative;
+    right: 160px;
+    object-fit: contain;
+    object-position: center;
+  }
+}
+
+.sidebarTitle {
+  text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  align-self: stretch;
+  max-width: 300px;
+  margin: 300px -1px 0 0;
+}
+
+@media (max-width: 991px) {
+  .sidebarTitle {
+    margin-top: 0px;
+    position: relative;
+    right: 160px;
+    width: 100%;
+    top: 30px;
+  }
+}
+
+.formContent {
+  align-self: end;
+  display: flex;
+  flex-direction: column;
+  padding: 1px 0; /* Substitui a margem por padding */
+  margin: 0px auto; /* Remove o espaçamento superior extra */
+  margin-left: 30%;
+}
+
+@media (max-width: 991px) {
+  .formContent {
+    margin-top: 10px;
+  }
+}
+
+.formTitle {
+  color: #4f9122;
+  text-align: center;
+  align-self: center;
+  margin-bottom: 70px;
+  margin-left: 0%;
+  font: 600 40px Inter, sans-serif;
+}
+
+@media (max-width: 991px) {
+  .formTitle {
+    width: 100%;
+    padding-right: 30%;
+  }
+}
+.inputLabel {
+  color: #67a140;
+  text-align: center;
+  align-self: start;
+  margin-top: 5%;
+  font: 600 25px Inter, sans-serif;
+}
+
+@media (max-width: 991px) {
+  .inputLabel {
+    margin-top: 40px;
+  }
+}
+
+.inputWrapper {
+  border-radius: 15px;
+  background-color: #fff;
+  display: flex;
+  padding: 5px 8px;
+  width: 100%;
+  margin-right: 50px;
+  border: 1px solid #4f9122;
+}
+
+@media (max-width: 991px) {
+  .inputWrapper {
+    margin-left: 20px;
+    padding-right: 60px;
+    width: 100%;
+  }
+}
+
+.inputIcon {
+  aspect-ratio: 0.76;
+  object-fit: contain;
+  object-position: center;
+  width: 19px;
+}
+
+.submitButton {
+  border-radius: 15px;
+  background-color: #67a140;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  color: #fff;
+  text-align: center;
+  margin: 23px auto 0 0;
+  padding: 15px 50px;
+  font: 800 20px Inter, sans-serif;
+  border: 1px solid #67a140;
+  margin-left: 25%;
+}
+
+@media (max-width: 991px) {
+  .submitButton {
+    margin-left: 4px;
+    white-space: initial;
+    padding: 0 20px;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Reset para campos de entrada */
+input,
+textarea,
+select {
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+.inputField {
+  font-size: 18px; /* Ajusta o tamanho da fonte dentro do campo de entrada */
+  background-color: transparent; /* Torna o fundo do campo de entrada transparente */
+  color: #000; /* Ajusta a cor do texto dentro do campo de entrada */
+  border: none; /* Remove a borda padrão do input */
+  outline: none; /* Remove o contorno padrão ao focar */
+  width: 100%; /* Garante que o input ocupe o espaço disponível */
+  padding: 4px; /* Ajuste o padding conforme necessário */
+  box-shadow: none; /* Remove qualquer sombra */
+}
