@@ -1,4 +1,4 @@
-.loginPage { 
+.loginPage {
   background-color: #ffffff;
   display: flex;
   justify-content: center;
@@ -27,31 +27,29 @@
 
 .sidebar {
   border-radius: 16px 0 0 16px;
-  background: linear-gradient(#67AE37, #4A8920);
+  background: linear-gradient(#67ae37, #4a8920);
   display: flex;
   flex-direction: column;
   align-items: center; /* Centraliza o conteúdo horizontalmente */
   justify-content: flex-start; /* Alinha os itens no topo */
   color: #fff;
   text-align: center;
-  width: 24%;
+  width: 28%;
 }
 
 @media (max-width: 768px) {
   .sidebar {
-    width: 90%; 
-    height: 360px; 
+    width: 90%;
+    height: 360px;
     border-radius: 16px 16px 0 0;
-    padding: 0px; 
-    margin: 0 auto; 
-    font-size: 14px; 
-
+    padding: 0px;
+    margin: 0 auto;
+    font-size: 14px;
   }
 }
 
-
-
-.sidebar h2 { /* Estilizando o título */
+.sidebar h2 {
+  /* Estilizando o título */
   text-align: center; /* Centraliza o título */
   font-size: 25px; /* Tamanho da fonte do título */
   margin: 130px 0; /* Margem para espaçamento */
@@ -61,22 +59,22 @@
   aspect-ratio: 3.38;
   object-fit: contain;
   object-position: center;
+  width: 304px;
+  border-radius: 16px 0 0 0;
+  z-index: 10;
   background-color: #fff;
-  width: 100%; /* Ajusta a largura para 100% da sidebar */
-  border-radius: 16px 0 0 0; /* Mantém o estilo */
 }
 
-@media (max-width: 991px){
-  .logo{
-  width: 100%;
-}
+@media (max-width: 991px) {
+  .logo {
+    width: 100%;
+  }
 }
 
 .departmentName {
   margin-top: 20px; /* Ajuste de margem para espaçamento */
   font-size: 24px; /* Tamanho da fonte */
   text-align: center; /* Centraliza o texto */
-
 }
 
 @media (max-width: 991px) {
@@ -85,8 +83,6 @@
     bottom: 50px; /* Move para baixo 20px */
   }
 }
-
-
 
 .mainContent {
   flex-grow: 1;
@@ -106,7 +102,7 @@
   text-align: center;
   font: 800 20px Inter, sans-serif;
   margin-bottom: 50px; /* Ajusta o espaçamento inferior */
-  font-size: 28px;
+  font-size: 24px;
 }
 
 .inputGroup {

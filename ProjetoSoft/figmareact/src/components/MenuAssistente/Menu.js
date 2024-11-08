@@ -7,9 +7,9 @@ function Menu() {
     { text: "Gerenciar Usuario", path: "/gerenciarusuario" },
     { text: "Beneficiário", path: "/gerenciarbeneficiario" },
     { text: "Benefícios", path: "/beneficios" },
-    { text: "Requisições", path: "/requisicaosecretaria" },
+    //{ text: "Requisições", path: "/requisicaosecretaria" },
     { text: "Filiado", path: "/filiado" },
-    { text: "RMA", path: "/RMA" },
+    //{ text: "RMA", path: "/RMA" },
     { text: "Historico RMA", path: "/RMAA" },
   ];
 
