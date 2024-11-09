@@ -121,8 +121,7 @@ public class BeneficiarioService {
                 resumoMensal
                                 .setOutrosBeneficiosTotal(resumoMensal.getOutrosBeneficiosTotal()
                                                 + beneficiario.getOutrosBeneficios());
-                resumoMensal.setAtendimentosColetivosTotal(
-                                resumoMensal.getAtendimentosColetivosTotal() + beneficiario.getAtendimentosColetivos());
+
                 resumoMensal.setFamiliasParticipantesPAIFTotal(
                                 resumoMensal.getFamiliasParticipantesPAIFTotal()
                                                 + beneficiario.getFamiliasParticipantesPAIF());

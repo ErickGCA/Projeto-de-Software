@@ -12,7 +12,6 @@ function Sidebar() {
         className={styles.logo}
       />
       <h1 className={styles.sidebarTitle}>Secretaria de Assistência Social</h1>
-      <h2 className={styles.formTitle}>Gerar Relatorio</h2>
     </aside>
   );
 }

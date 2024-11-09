@@ -28,7 +28,6 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
     auxiliosNatalidade: 0,
     auxiliosFuneral: 0,
     outrosBeneficios: 0,
-    atendimentosColetivos: 0,
     familiasParticipantesPAIF: 0,
     criancas06SCFV: 0,
     criancas714SCFV: 0,
@@ -80,7 +79,6 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
         auxiliosNatalidade: item.auxiliosNatalidade || 0,
         auxiliosFuneral: item.auxiliosFuneral || 0,
         outrosBeneficios: item.outrosBeneficios || 0,
-        atendimentosColetivos: item.atendimentosColetivos || 0,
         familiasParticipantesPAIF: item.familiasParticipantesPAIF || 0,
         criancas06SCFV: item.criancas06SCFV || 0,
         criancas714SCFV: item.criancas714SCFV || 0,
@@ -465,15 +463,6 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
                   type="number"
                   name="outrosBeneficios"
                   value={formData.outrosBeneficios}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group controlId="formAtendimentosColetivos">
-                <Form.Label>Atendimentos Coletivos</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="atendimentosColetivos"
-                  value={formData.atendimentosColetivos}
                   onChange={handleChange}
                 />
               </Form.Group>

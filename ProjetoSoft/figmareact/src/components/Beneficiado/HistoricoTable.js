@@ -276,10 +276,6 @@ function HistoricoTable({ data, onEdit, onDelete }) {
                 {selectedBeneficiary.outrosBeneficios}
               </p>
               <p>
-                <strong>Atendimentos Coletivos:</strong>{" "}
-                {selectedBeneficiary.atendimentosColetivos}
-              </p>
-              <p>
                 <strong>Famílias Participantes PAIF:</strong>{" "}
                 {selectedBeneficiary.familiasParticipantesPAIF}
               </p>
