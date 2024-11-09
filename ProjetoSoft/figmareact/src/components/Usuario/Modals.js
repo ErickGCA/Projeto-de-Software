@@ -5,7 +5,6 @@ import { Button, Form, Modal } from "react-bootstrap";
 // AddModal Component
 export function AddModal({ show, handleClose, handleSave }) {
   const [formData, setFormData] = useState({
-    // Removido o campo 'id'
     username: "",
     password: "",
     profile: "",
@@ -73,6 +72,8 @@ export function AddModal({ show, handleClose, handleSave }) {
               <option value="">Selecione</option>
               <option value="0">ADM</option>
               <option value="1">SECRETARIA</option>
+              <option value="2">OUTROS</option>
+              {/* <option value="3">ANALISTA</option> */}
             </Form.Control>
           </Form.Group>
         </Form>
@@ -133,7 +134,6 @@ export function EditModal({ show, handleClose, selectedItem, handleSave }) {
       </Modal.Header>
       <Modal.Body>
         <Form>
-          {/* Exibir ID como readOnly */}
           <Form.Group controlId="formId">
             <Form.Label>ID</Form.Label>
             <Form.Control
@@ -174,6 +174,8 @@ export function EditModal({ show, handleClose, selectedItem, handleSave }) {
               <option value="">Selecione</option>
               <option value="0">ADM</option>
               <option value="1">SECRETARIA</option>
+              <option value="2">GERENTE</option>
+              <option value="3">ANALISTA</option>
             </Form.Control>
           </Form.Group>
         </Form>

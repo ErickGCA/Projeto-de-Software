@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import api from "../../api/api";
-import AddEditModal from './AddEditModal';
+import AddEditModal from "./AddEditModal";
 import styles from "./BeneficiosAssistente.module.css";
-import DeleteModal from './DeleteModal'; // Importar o DeleteModal
+import DeleteModal from "./DeleteModal"; // Importar o DeleteModal
 import HistoricoTable from "./HistoricoTable";
 import Pagination from "./Pagination";
 
-
 function HistoricoList() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -34,7 +33,7 @@ function HistoricoList() {
         const data = await getHistorico();
         setHistoricoData(data);
       } catch (error) {
-        console.error('Erro ao buscar dados do histórico:', error);
+        console.error("Erro ao buscar dados do histórico:", error);
       }
     };
     fetchData();
@@ -66,8 +65,8 @@ function HistoricoList() {
         handleCloseDeleteModal();
       }
     } catch (error) {
-      console.error('Erro ao excluir item:', error);
-      alert('Houve um erro ao excluir o item. Por favor, tente novamente.');
+      console.error("Erro ao excluir item:", error);
+      alert("Houve um erro ao excluir o item. Por favor, tente novamente.");
     }
   };
 
@@ -75,9 +74,11 @@ function HistoricoList() {
   const filteredData = historicoData.filter((item) => {
     const searchValue = searchTerm.toLowerCase();
     return (
-      item.CodBeneficio && item.CodBeneficio.toLowerCase().includes(searchValue) ||
-      item.categoria && item.categoria.toLowerCase().includes(searchValue) ||
-      item.desc_beneficio && item.desc_beneficio.toLowerCase().includes(searchValue)
+      (item.CodBeneficio &&
+        item.CodBeneficio.toLowerCase().includes(searchValue)) ||
+      (item.categoria && item.categoria.toLowerCase().includes(searchValue)) ||
+      (item.desc_beneficio &&
+        item.desc_beneficio.toLowerCase().includes(searchValue))
     );
   });
 
@@ -89,12 +90,13 @@ function HistoricoList() {
   const handleSave = async (item) => {
     try {
       if (item.id) {
+        // Editando benefício
         await api.put(`/Beneficios/${item.id}`, item);
       } else {
-        await api.post('/Beneficios', item);
+        // Criando novo benefício com associação de beneficiários
+        await api.post("/Beneficios", item);
       }
-  
-      // Verificando a resposta da API e atualização do estado
+
       const data = await getHistorico();
       setHistoricoData(data);
       handleCloseAddModal();
@@ -104,8 +106,6 @@ function HistoricoList() {
       alert("Houve um erro ao salvar os dados. Por favor, tente novamente.");
     }
   };
-  
-
 
   return (
     <div className={styles.historicoContainer}>
@@ -128,18 +128,16 @@ function HistoricoList() {
         onDelete={handleShowDeleteModal}
       />
 
-<Pagination
-  currentPage={currentPage}
-  totalPages={totalPages}
-  onSelectPage={setCurrentPage} 
-/>
-
-
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onSelectPage={setCurrentPage}
+      />
 
       <AddEditModal
         show={showAddModal || showEditModal}
         handleClose={showAddModal ? handleCloseAddModal : handleCloseEditModal}
-        title={showAddModal ? 'Adicionar Beneficio' : 'Editar Beneficio'}
+        title={showAddModal ? "Adicionar Beneficio" : "Editar Beneficio"}
         item={selectedItem}
         onSave={handleSave}
       />

@@ -6,10 +6,10 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum TipoUser {
-    
-    ADM,
-    SECRETARIA
 
-   
+    ADM,
+    SECRETARIA,
+    GERENTE,
+    ANALISTA
 
 }

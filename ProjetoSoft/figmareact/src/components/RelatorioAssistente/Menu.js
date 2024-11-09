@@ -1,87 +1,73 @@
-import React, { useState } from "react";
-import { Button, FormControl } from "react-bootstrap";
-import generatePDF from "./generatePDF";
-import Pagination from "./Pagination";
-import styles from "./RelatorioAssistente.module.css";
+// HistoricoList.js
+import React, { useRef, useState } from "react";
+import { Button } from "react-bootstrap";
+import FormularioCRAS from "./FormularioCRAS";
 
-function HistoricoList() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filter, setFilter] = useState("");
-  const itemsPerPage = 7;
+const HistoricoList = () => {
+  const [showForm, setShowForm] = useState(false);
+  const componentRef = useRef();
 
-  const historicoData = [
-    {
-      nome: "Maria",
-      codnis: "123",
-      endereco: "Rua A",
-      cpf: "111.111.111-11",
-      telefone: "12345678",
-      date: "2023-09-01",
-    },
-  ];
+  const handlePrint = () => {
+    const content = componentRef.current;
+    const printWindow = window.open("", "_blank");
 
-  const filteredData = historicoData.filter((item) =>
-    item.nome.toLowerCase().includes(filter.toLowerCase())
-  );
+    printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Formulário CRAS</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                        }
+                        th, td {
+                            border: 1px solid black;
+                            padding: 8px;
+                        }
+                        @media print {
+                            body {
+                                width: 21cm;
+                                height: 29.7cm;
+                                margin: 0;
+                                padding: 1cm;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${content.outerHTML}
+                </body>
+            </html>
+        `);
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+    printWindow.document.close();
+    printWindow.focus();
 
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 250);
+  };
 
   return (
-    <div className={styles.historicoContainer}>
-      <div className={styles.searchContainer}>
-        <FormControl
-          type="text"
-          placeholder="Filtrar por nome..."
-          className="mr-sm-2"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        />
-        <Button
-          onClick={() => generatePDF(historicoData)}
-          className={styles.createButton}
-        >
-          Gerar PDF
+    <div className="container mx-auto p-4">
+      <div className="mb-4">
+        <Button onClick={() => setShowForm(!showForm)}>
+          {showForm ? "Voltar" : "Gerar Formulário"}
         </Button>
+        {showForm && (
+          <Button onClick={handlePrint} className="ml-2">
+            Imprimir
+          </Button>
+        )}
       </div>
 
-      <div className={styles.historicoTableContainer}>
-        <table className={styles.historicoTable}>
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Codnis</th>
-              <th>Endereço</th>
-              <th>CPF</th>
-              <th>Telefone</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentItems.map((item, index) => (
-              <tr key={index}>
-                <td>{item.nome}</td>
-                <td>{item.codnis}</td>
-                <td>{item.endereco}</td>
-                <td>{item.cpf}</td>
-                <td>{item.telefone}</td>
-                <td>{item.date}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageSelect={(pageNumber) => setCurrentPage(pageNumber)}
-        />
-      </div>
+      {showForm && <FormularioCRAS ref={componentRef} />}
     </div>
   );
-}
+};
 
 export default HistoricoList;

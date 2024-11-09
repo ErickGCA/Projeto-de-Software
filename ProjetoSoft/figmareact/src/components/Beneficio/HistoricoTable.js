@@ -9,6 +9,7 @@ function HistoricoTable({ data, onEdit, onDelete }) {
         <tr>
           <th>Categoria</th>
           <th>Descrição Benefício</th>
+          <th>Beneficiario</th>
         </tr>
       </thead>
       <tbody>
@@ -16,6 +17,7 @@ function HistoricoTable({ data, onEdit, onDelete }) {
           <tr key={index}>
             <td>{item.categoria}</td>
             <td>{item.desc_beneficio}</td>
+            <td>{item.beneficiario}</td>
             <td>
               <Button
                 className={`${styles.actionButton} ${styles.editButton}`}
@@ -36,6 +38,5 @@ function HistoricoTable({ data, onEdit, onDelete }) {
     </table>
   );
 }
-
 
 export default HistoricoTable;

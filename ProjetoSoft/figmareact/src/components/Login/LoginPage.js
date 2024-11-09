@@ -8,10 +8,9 @@ import api from "../../api/api";
 import logoImage from "../images/logo (1).png";
 import styles from "./LoginPage.module.css";
 
-
 const LoginPage = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("userpadrao");
+  const [password, setPassword] = useState("senhaPadrao");
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [error, setError] = useState("");
@@ -29,6 +28,7 @@ const LoginPage = () => {
       setErrorMessage("Por favor, preencha todos os campos.");
       return;
     }
+
     try {
       const response = await api.post("/login", {
         username: username,
@@ -50,17 +50,24 @@ const LoginPage = () => {
 
       localStorage.setItem("isAuthenticated", "true");
 
+      // Mantém a lógica original para os perfis existentes (ADM e SECRETARIA)
       if (userResponse.data.profile.includes("ADM")) {
         navigate("/menuassistente", { replace: true });
       } else if (userResponse.data.profile.includes("SECRETARIA")) {
         navigate("/menusecretaria", { replace: true });
+      }
+      // Redireciona os novos perfis (GERENTE e ANALISTA) para o menu da secretaria durante os testes
+      else if (
+        userResponse.data.profile.includes("GERENTE") ||
+        userResponse.data.profile.includes("ANALISTA")
+      ) {
+        navigate("/menuoutros", { replace: true });
       }
     } catch (err) {
       console.log(err);
       setError("Usuário ou senha inválidos");
     }
   };
-
   return (
     <main className={styles.loginPage}>
       <div className={styles.loginContainer}>

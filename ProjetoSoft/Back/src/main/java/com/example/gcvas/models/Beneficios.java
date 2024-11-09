@@ -21,26 +21,23 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Beneficios {
-    
-     public static final String TABLE_NAME = "Beneficios";
+
+    public static final String TABLE_NAME = "Beneficios";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CodB", nullable = false, unique = true)
-    private Long  id;
+    private Long id;
 
-    @Column(name = "Categoria", unique = true, nullable = false, insertable = true, updatable = false, length = 50 )
-    @Size(min = 4, max = 50)
-    @NotBlank
+    @Column(name = "Categoria", nullable = false, length = 50)
     private String categoria;
 
-    @Column(name = "Descricao", unique = false, nullable = false, insertable = true, updatable = true, length = 50 )
+    @Column(name = "Descricao", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
     @Size(min = 4, max = 50)
     @NotBlank
     private String desc_beneficio;
 
-    @ManyToMany(mappedBy="beneficiadoBeneficio")
+    @ManyToMany(mappedBy = "beneficiadoBeneficio")
     Set<Beneficiario> beneficiado;
-
 
 }
