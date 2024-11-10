@@ -3,6 +3,18 @@ import { Button } from "react-bootstrap";
 import styles from "./BeneficiosAssistente.module.css";
 
 function HistoricoTable({ data, onEdit, onDelete }) {
+  const formatCPF = (cpf) => {
+    if (!cpf) return "";
+    const numbers = cpf.replace(/\D/g, "");
+    return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("pt-BR");
+  };
+
   return (
     <table className={styles.historicoTable}>
       <thead>
@@ -11,6 +23,7 @@ function HistoricoTable({ data, onEdit, onDelete }) {
           <th>CPF do Filiado</th>
           <th>Data de Nascimento</th>
           <th>Beneficiário</th>
+          <th>Benefícios</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -18,9 +31,16 @@ function HistoricoTable({ data, onEdit, onDelete }) {
         {data.map((item, index) => (
           <tr key={index}>
             <td>{item.username}</td>
-            <td>{item.cpf}</td>
-            <td>{item.data}</td>
+            <td>{formatCPF(item.cpf)}</td>
+            <td>{formatDate(item.data)}</td>
             <td>{item.beneficiario?.username || "Não informado"}</td>
+            <td>
+              {item.beneficiario?.beneficiadoBeneficio?.map((beneficio) => (
+                <span key={beneficio.id} className={styles.beneficioTag}>
+                  {beneficio.nome}
+                </span>
+              )) || "Nenhum benefício"}
+            </td>
             <td>
               <Button
                 className={`${styles.actionButton} ${styles.editButton}`}

@@ -12,24 +12,9 @@ import styles from "./EncaminharPessoa.module.css";
 import FormInput from "./FormInput";
 
 const formInputs = [
-  {
-    label: "Nome",
-    icon: <MdPerson />,
-    width: 412,
-    id: "username",
-  },
-  {
-    label: "CPF",
-    icon: <MdPerson />,
-    width: 217,
-    id: "cpf",
-  },
-  {
-    label: "Telefone",
-    icon: <MdPhone />,
-    width: 217,
-    id: "telefone",
-  },
+  { label: "Nome", icon: <MdPerson />, width: 412, id: "username" },
+  { label: "CPF", icon: <MdPerson />, width: 217, id: "cpf" },
+  { label: "Telefone", icon: <MdPhone />, width: 217, id: "telefone" },
   { label: "Endereço", icon: <MdLocationOn />, width: 412, id: "endereco" },
   {
     label: "Data de Nascimento",
@@ -38,12 +23,7 @@ const formInputs = [
     id: "data",
     type: "date",
   },
-  {
-    label: "Setor",
-    icon: <MdWork />,
-    width: 217,
-    id: "setor",
-  },
+  { label: "Setor", icon: <MdWork />, width: 217, id: "setor" },
 ];
 
 function EncaminharPessoa() {
@@ -71,17 +51,15 @@ function EncaminharPessoa() {
       try {
         const response = await api.get("/Beneficiario");
         setBeneficiarios(response.data);
-        setFilteredBeneficiarios(response.data);
       } catch (err) {
         console.error("Erro ao buscar beneficiários:", err);
       }
     };
-
     fetchBeneficiarios();
   }, []);
 
   useEffect(() => {
-    if (isSearching) {
+    if (isSearching && searchTerm) {
       const results = beneficiarios.filter(
         (beneficiario) =>
           beneficiario.username
@@ -93,6 +71,8 @@ function EncaminharPessoa() {
           beneficiario.nis.includes(searchTerm)
       );
       setFilteredBeneficiarios(results);
+    } else {
+      setFilteredBeneficiarios([]);
     }
   }, [searchTerm, beneficiarios, isSearching]);
 
@@ -108,13 +88,13 @@ function EncaminharPessoa() {
     const value = e.target.value;
     setSearchTerm(value);
     setIsSearching(true);
-
     if (!value) {
       setFormData((prev) => ({
         ...prev,
         beneficiarioId: "",
         beneficiarioNome: "",
       }));
+      setIsSearching(false);
     }
   };
 
@@ -145,8 +125,7 @@ function EncaminharPessoa() {
     };
 
     try {
-      const response = await api.post("/encaminhar", payload);
-      console.log(response.data); // Exemplo de uso
+      await api.post("/encaminhar", payload);
       setSuccess(true);
       setFormData({
         username: "",
@@ -169,10 +148,8 @@ function EncaminharPessoa() {
     }
   };
 
-  const formatCPF = (cpf) => {
-    const numbers = cpf.replace(/\D/g, "");
-    return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-  };
+  const formatCPF = (cpf) =>
+    cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
 
   return (
     <div className={styles.container}>
@@ -207,11 +184,10 @@ function EncaminharPessoa() {
                   className={styles.input}
                 />
               </div>
-              {isSearching &&
-                searchTerm &&
-                filteredBeneficiarios.length > 0 && (
-                  <ul className={styles.beneficiarioList}>
-                    {filteredBeneficiarios.map((beneficiario) => (
+              {isSearching && searchTerm && (
+                <ul className={styles.beneficiarioList}>
+                  {filteredBeneficiarios.length > 0 ? (
+                    filteredBeneficiarios.map((beneficiario) => (
                       <li
                         key={beneficiario.id}
                         onClick={() => handleBeneficiarioSelect(beneficiario)}
@@ -227,14 +203,19 @@ function EncaminharPessoa() {
                           </span>
                         </div>
                       </li>
-                    ))}
-                  </ul>
-                )}
+                    ))
+                  ) : (
+                    <li className={styles.noResults}>
+                      Nenhum beneficiário encontrado
+                    </li>
+                  )}
+                </ul>
+              )}
             </div>
 
-            {formInputs.map((input, index) => (
+            {formInputs.map((input) => (
               <FormInput
-                key={index}
+                key={input.id}
                 label={input.label}
                 icon={input.icon}
                 width={input.width}

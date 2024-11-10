@@ -47,9 +47,9 @@ public class Beneficiario {
     private String cpf;
 
     @Column(name = "Telefone", nullable = false)
-
     private String telefone;
     @Column(name = "mes", nullable = false)
+
     @NotNull(message = "O campo 'mes' não pode ser nulo.")
     private String mes;
 

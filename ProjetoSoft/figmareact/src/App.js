@@ -74,7 +74,7 @@ function App() {
           }
         />
         <Route
-          path="/relatoriosecretaria"
+          path="/relatorio"
           element={
             <PrivateRoute>
               <RelatorioAssistente />

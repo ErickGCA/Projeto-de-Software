@@ -9,8 +9,8 @@ import logoImage from "../images/logo (1).png";
 import styles from "./LoginPage.module.css";
 
 const LoginPage = () => {
-  const [username, setUsername] = useState("userpadrao");
-  const [password, setPassword] = useState("senhaPadrao");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [error, setError] = useState("");

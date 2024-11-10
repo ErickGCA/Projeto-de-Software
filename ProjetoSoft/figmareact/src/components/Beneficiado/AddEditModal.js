@@ -94,6 +94,7 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
         beneficiario: item.beneficiario || "",
         beneficiarioId: item.beneficiario?.id || "",
         beneficiarioNome: item.beneficiario?.username || "",
+        mes: mesesToPortugues[item.mes] || item.mes,
       });
       if (item.beneficiario?.username) {
         setSearchTerm(item.beneficiario.username);
@@ -101,6 +102,35 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
     }
   }, [item]);
 
+  const mesesTraducao = {
+    JANEIRO: "JANUARY",
+    FEVEREIRO: "FEBRUARY",
+    MARCO: "MARCH",
+    ABRIL: "APRIL",
+    MAIO: "MAY",
+    JUNHO: "JUNE",
+    JULHO: "JULY",
+    AGOSTO: "AUGUST",
+    SETEMBRO: "SEPTEMBER",
+    OUTUBRO: "OCTOBER",
+    NOVEMBRO: "NOVEMBER",
+    DEZEMBRO: "DECEMBER",
+  };
+
+  const mesesToPortugues = {
+    JANUARY: "JANEIRO",
+    FEBRUARY: "FEVEREIRO",
+    MARCH: "MARCO",
+    APRIL: "ABRIL",
+    MAY: "MAIO",
+    JUNE: "JUNHO",
+    JULY: "JULHO",
+    AUGUST: "AGOSTO",
+    SEPTEMBER: "SETEMBRO",
+    OCTOBER: "OUTUBRO",
+    NOVEMBER: "NOVEMBRO",
+    DECEMBER: "DEZEMBRO",
+  };
   useEffect(() => {
     if (isSearching) {
       const results = beneficiarios.filter(
@@ -135,7 +165,7 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: name === "mes" ? mesesTraducao[value] || value : value,
     });
   };
 
@@ -306,12 +336,25 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
             <Form>
               <Form.Group controlId="formMes">
                 <Form.Label>Mês</Form.Label>
-                <Form.Control
-                  type="text"
+                <Form.Select
                   name="mes"
-                  value={formData.mes}
+                  value={formData.mes ? mesesToPortugues[formData.mes] : ""}
                   onChange={handleChange}
-                />
+                >
+                  <option value="">Selecione um mês</option>
+                  <option value="JANEIRO">Janeiro</option>
+                  <option value="FEVEREIRO">Fevereiro</option>
+                  <option value="MARCO">Março</option>
+                  <option value="ABRIL">Abril</option>
+                  <option value="MAIO">Maio</option>
+                  <option value="JUNHO">Junho</option>
+                  <option value="JULHO">Julho</option>
+                  <option value="AGOSTO">Agosto</option>
+                  <option value="SETEMBRO">Setembro</option>
+                  <option value="OUTUBRO">Outubro</option>
+                  <option value="NOVEMBRO">Novembro</option>
+                  <option value="DEZEMBRO">Dezembro</option>
+                </Form.Select>
               </Form.Group>
               <Form.Group controlId="formFamiliasPAIF">
                 <Form.Label>Famílias PAIF</Form.Label>

@@ -10,6 +10,7 @@ function Menu() {
     //{ text: "Requisições", path: "/requisicaosecretaria" },
     { text: "Filiado", path: "/filiado" },
     //{ text: "RMA", path: "/RMA" },
+    { text: "Relatório RMA", path: "/relatorio" },
     { text: "Historico RMA", path: "/RMAA" },
   ];
 

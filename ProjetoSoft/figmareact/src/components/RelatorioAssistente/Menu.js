@@ -3,39 +3,37 @@ import axios from "axios";
 import React, { useRef, useState } from "react";
 import { Button } from "react-bootstrap";
 import FormularioCRAS2 from "./FormularioCRAS2";
+import styles from "./RelatorioAssistente.module.css";
 
 axios.defaults.baseURL = "http://localhost:8080"; // Define a URL base
 
 const HistoricoList = () => {
-  const [showForm, setShowForm] = useState(false);
   const [mesAtual, setMesAtual] = useState("");
   const [dadosFormulario, setDadosFormulario] = useState(null);
   const [loading, setLoading] = useState(false);
   const componentRef = useRef();
 
   const mapMesToNome = {
-    "01": "JANEIRO",
-    "02": "FEVEREIRO",
-    "03": "MARÇO",
-    "04": "ABRIL",
+    "01": "JANUARY",
+    "02": "FEBRUARY",
+    "03": "MARCH",
+    "04": "APRIL",
     "05": "MAIO",
-    "06": "JUNHO",
-    "07": "JULHO",
-    "08": "AGOSTO",
-    "09": "SETEMBRO",
-    10: "OUTUBRO",
-    11: "NOVEMBRO",
-    12: "DEZEMBRO",
+    "06": "JUNE",
+    "07": "JULY",
+    "08": "AUGUST",
+    "09": "SEPTEMBER",
+    10: "OCTOBER",
+    11: "NOVEMBER",
+    12: "DECEMBER",
   };
-
   const buscarDadosMes = async (mes) => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `http://localhost:8080/Beneficiario/mes/${mes}`
-      );
-      const dados = calcularTotais(response.data);
-      setDadosFormulario(dados);
+      const response = await axios.get(`http://localhost:8080/resumo/${mes}`);
+      console.log("Dados recebidos:", response.data); // Verifique se os dados estão corretos
+      const dados = calcularTotais(response.data); // Passa o objeto para calcularTotais
+      setDadosFormulario(dados); // Atualiza o estado com os totais
     } catch (error) {
       console.error("Erro ao buscar dados:", error);
     } finally {
@@ -43,11 +41,15 @@ const HistoricoList = () => {
     }
   };
 
-  const calcularTotais = (beneficiarios) => {
-    if (!beneficiarios || beneficiarios.length === 0) return null;
+  const calcularTotais = (beneficiario) => {
+    if (!beneficiario) {
+      console.error("Nenhum dado encontrado"); // Exibe erro caso não haja dados
+      return null;
+    }
 
+    // Inicializa totais
     const totais = {
-      mes: beneficiarios[0].mes,
+      mes: beneficiario.mes,
       familiasPAIF: 0,
       novasFamiliasPAIF: 0,
       familiasExtremaPobreza: 0,
@@ -75,12 +77,11 @@ const HistoricoList = () => {
       pessoasDeficiencia: 0,
     };
 
-    beneficiarios.forEach((beneficiario) => {
-      Object.keys(totais).forEach((key) => {
-        if (key !== "mes" && beneficiario[key] !== undefined) {
-          totais[key] += beneficiario[key];
-        }
-      });
+    // Acumula os totais a partir do objeto do beneficiário
+    Object.keys(totais).forEach((key) => {
+      if (beneficiario[`${key}Total`] !== undefined) {
+        totais[key] = beneficiario[`${key}Total`];
+      }
     });
 
     return totais;
@@ -133,7 +134,7 @@ const HistoricoList = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="mb-4">
+      <div className={styles.mes}>
         <select
           value={mesAtual}
           onChange={handleMesChange}
@@ -154,21 +155,14 @@ const HistoricoList = () => {
           <option value="12">Dezembro</option>
         </select>
 
-        <Button onClick={() => setShowForm(!showForm)} className="mr-2">
-          {showForm ? "Voltar" : "Gerar Formulário"}
+        <Button onClick={handlePrint} className={styles.print}>
+          Imprimir
         </Button>
-
-        {showForm && (
-          <Button onClick={handlePrint} className="ml-2">
-            Imprimir
-          </Button>
-        )}
       </div>
 
       {loading ? (
         <div>Carregando dados...</div>
       ) : (
-        showForm &&
         dadosFormulario && (
           <FormularioCRAS2 ref={componentRef} dados={dadosFormulario} />
         )
