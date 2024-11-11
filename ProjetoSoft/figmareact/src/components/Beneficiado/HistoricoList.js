@@ -60,8 +60,10 @@ function HistoricoList() {
   const handleDelete = async () => {
     try {
       if (selectedItem) {
-        await api.delete(`/Beneficiario/${selectedItem.id}`);
+        const response = await api.delete(`/Beneficiario/${selectedItem.id}`);
+        console.log("Response from delete:", response); // Verifique a resposta aqui
         const data = await getHistorico();
+        console.log("Updated data after delete:", data); // Verifique os dados atualizados
         setHistoricoData(data);
         handleCloseDeleteModal();
       }

@@ -1,6 +1,7 @@
 package com.example.gcvas.controllers;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,9 +50,14 @@ public class BeneficiosController {
 
     @PostMapping()
     public ResponseEntity<Void> postBeneficios(@RequestBody @Valid Beneficios obj) {
-        // Busca os beneficiários pelo ID e associa ao benefício
+        // Se o campo 'beneficiado' for null, inicialize como um Set vazio
+        if (obj.getBeneficiado() == null) {
+            obj.setBeneficiado(new HashSet<>());
+        }
+
+        // Agora, associamos os beneficiários
         Set<Beneficiario> beneficiarios = obj.getBeneficiado().stream()
-                .map(beneficiario -> beneficiariosService.findByid(beneficiario.getId())) // Utiliza o serviço correto
+                .map(beneficiario -> beneficiariosService.findByid(beneficiario.getId()))
                 .collect(Collectors.toSet());
 
         obj.setBeneficiado(beneficiarios); // Define a lista de beneficiários no benefício

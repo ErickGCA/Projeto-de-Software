@@ -3,7 +3,7 @@ import { Button } from "react-bootstrap";
 import api from "../../api/api";
 import AddEditModal from "./AddEditModal";
 import styles from "./BeneficiosAssistente.module.css";
-import DeleteModal from "./DeleteModal"; // Importar o DeleteModal
+import DeleteModal from "./DeleteModal";
 import HistoricoTable from "./HistoricoTable";
 import Pagination from "./Pagination";
 
@@ -13,16 +13,16 @@ function HistoricoList() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [historicoData, setHistoricoData] = useState([]);
+  const [categoriasData, setCategoriasData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 6;
 
-  const getHistorico = async () => {
+  const getCategorias = async () => {
     try {
-      const response = await api.get("/Beneficios");
+      const response = await api.get("/categorias");
       return response.data;
     } catch (error) {
-      console.error("Erro ao buscar dados dos benefícios:", error);
+      console.error("Erro ao buscar dados das categorias:", error);
       throw error;
     }
   };
@@ -30,10 +30,10 @@ function HistoricoList() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getHistorico();
-        setHistoricoData(data);
+        const data = await getCategorias();
+        setCategoriasData(data);
       } catch (error) {
-        console.error("Erro ao buscar dados do histórico:", error);
+        console.error("Erro ao buscar dados das categorias:", error);
       }
     };
     fetchData();
@@ -59,9 +59,9 @@ function HistoricoList() {
   const handleDelete = async () => {
     try {
       if (selectedItem) {
-        await api.delete(`/Beneficios/${selectedItem.id}`);
-        const data = await getHistorico();
-        setHistoricoData(data);
+        await api.delete(`/categorias/${selectedItem.id}`);
+        const data = await getCategorias();
+        setCategoriasData(data);
         handleCloseDeleteModal();
       }
     } catch (error) {
@@ -70,15 +70,12 @@ function HistoricoList() {
     }
   };
 
-  // Filtragem dentro do componente
-  const filteredData = historicoData.filter((item) => {
+  // Filtragem
+  const filteredData = categoriasData.filter((item) => {
     const searchValue = searchTerm.toLowerCase();
     return (
-      (item.CodBeneficio &&
-        item.CodBeneficio.toLowerCase().includes(searchValue)) ||
-      (item.categoria && item.categoria.toLowerCase().includes(searchValue)) ||
-      (item.desc_beneficio &&
-        item.desc_beneficio.toLowerCase().includes(searchValue))
+      (item.nome && item.nome.toLowerCase().includes(searchValue)) ||
+      (item.descricao && item.descricao.toLowerCase().includes(searchValue))
     );
   });
 
@@ -90,19 +87,17 @@ function HistoricoList() {
   const handleSave = async (item) => {
     try {
       if (item.id) {
-        // Editando benefício
-        await api.put(`/Beneficios/${item.id}`, item);
+        await api.put(`/categorias/${item.id}`, item);
       } else {
-        // Criando novo benefício com associação de beneficiários
-        await api.post("/Beneficios", item);
+        await api.post("/categorias", item);
       }
 
-      const data = await getHistorico();
-      setHistoricoData(data);
+      const data = await getCategorias();
+      setCategoriasData(data);
       handleCloseAddModal();
       handleCloseEditModal();
     } catch (error) {
-      console.error("Erro ao salvar benefício:", error);
+      console.error("Erro ao salvar categoria:", error);
       alert("Houve um erro ao salvar os dados. Por favor, tente novamente.");
     }
   };
@@ -112,13 +107,13 @@ function HistoricoList() {
       <div className={styles.searchContainer}>
         <input
           type="text"
-          placeholder="Pesquisar..."
+          placeholder="Pesquisar categoria..."
           value={searchTerm}
           onChange={handleSearch}
           className={styles.searchInput}
         />
         <Button onClick={handleShowAddModal} className={styles.createButton}>
-          Criar
+          Nova Categoria
         </Button>
       </div>
 
@@ -137,7 +132,7 @@ function HistoricoList() {
       <AddEditModal
         show={showAddModal || showEditModal}
         handleClose={showAddModal ? handleCloseAddModal : handleCloseEditModal}
-        title={showAddModal ? "Adicionar Beneficio" : "Editar Beneficio"}
+        title={showAddModal ? "Adicionar Categoria" : "Editar Categoria"}
         item={selectedItem}
         onSave={handleSave}
       />

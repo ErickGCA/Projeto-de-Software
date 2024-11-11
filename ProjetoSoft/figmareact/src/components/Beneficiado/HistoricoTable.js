@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, Nav, Tab, Table } from "react-bootstrap";
 import api from "../../api/api";
 import styles from "./GerenciarBeneficiado.module.css";
 
@@ -7,14 +7,10 @@ function HistoricoTable({ data, onEdit, onDelete }) {
   const [showAdditionalInfoModal, setShowAdditionalInfoModal] = useState(false);
   const [showFiliadoModal, setShowFiliadoModal] = useState(false);
   const [selectedBeneficiary, setSelectedBeneficiary] = useState(null);
-  const [selectedFiliado, setSelectedFiliado] = useState(null);
+  const [selectedFiliados, setSelectedFiliados] = useState([]);
   const [loadingFiliado, setLoadingFiliado] = useState(false);
   const [error, setError] = useState(null);
-
-  const handleShowAdditionalInfo = (beneficiary) => {
-    setSelectedBeneficiary(beneficiary);
-    setShowAdditionalInfoModal(true);
-  };
+  const [activeFiliadoIndex, setActiveFiliadoIndex] = useState(0);
 
   const handleShowFiliado = async (beneficiary) => {
     setLoadingFiliado(true);
@@ -23,37 +19,16 @@ function HistoricoTable({ data, onEdit, onDelete }) {
 
     try {
       const response = await api.get("/filiado");
-      console.log("Dados brutos retornados da API:", response.data);
-
       const filiados = response.data;
-      console.log("Lista de filiados:", filiados);
 
-      // Log para cada filiado e seu beneficiário associado
-      filiados.forEach((filiado, index) => {
-        console.log(`Filiado ${index + 1}:`, {
-          id: filiado.id,
-          username: filiado.username,
-          beneficiario: filiado.beneficiario,
-          beneficiarioId: filiado.beneficiario?.id, // Mudança aqui
-        });
-      });
+      // Filtra todos os filiados que pertencem ao beneficiário selecionado
+      const matchingFiliados = filiados.filter(
+        (filiado) => filiado.beneficiario?.id === beneficiary.id
+      );
 
-      const matchingFiliado = filiados.find((filiado) => {
-        console.log("Comparando:", {
-          "NIS do Beneficiário atual": beneficiary.id, // Mudança aqui
-          "ID do Beneficiário do Filiado": filiado.beneficiario?.id, // Mudança aqui
-          "Match?": filiado.beneficiario?.id === beneficiary.id, // Mudança aqui
-        });
-        return filiado.beneficiario?.id === beneficiary.id; // Mudança aqui
-      });
-
-      console.log("Filiado encontrado:", matchingFiliado);
-
-      if (matchingFiliado) {
-        setSelectedFiliado(matchingFiliado);
-        console.log("Filiado selecionado com sucesso:", matchingFiliado);
+      if (matchingFiliados.length > 0) {
+        setSelectedFiliados(matchingFiliados);
       } else {
-        console.log("Nenhum filiado encontrado para o ID:", beneficiary.id);
         setError("Nenhum filiado encontrado para este beneficiário.");
       }
     } catch (error) {
@@ -66,21 +41,34 @@ function HistoricoTable({ data, onEdit, onDelete }) {
     }
   };
 
+  const handleShowAdditionalInfo = (beneficiary) => {
+    setSelectedBeneficiary(beneficiary);
+    setShowAdditionalInfoModal(true);
+  };
+
+  // Função de fechamento do modal de filiado
+  const handleCloseFiliado = () => {
+    setShowFiliadoModal(false);
+    setSelectedFiliados([]);
+    setError(null);
+  };
+
+  // Função de fechamento do modal de informações adicionais
   const handleCloseAdditionalInfo = () => {
     setShowAdditionalInfoModal(false);
     setSelectedBeneficiary(null);
-  };
-
-  const handleCloseFiliado = () => {
-    setShowFiliadoModal(false);
-    setSelectedFiliado(null);
-    setError(null);
   };
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
     return date.toLocaleDateString("pt-BR");
+  };
+
+  const formatCPF = (cpf) => {
+    return cpf
+      ? cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
+      : "";
   };
 
   return (
@@ -103,7 +91,7 @@ function HistoricoTable({ data, onEdit, onDelete }) {
             <tr key={index}>
               <td>{item.username}</td>
               <td>{item.nis}</td>
-              <td>{item.cpf}</td>
+              <td>{formatCPF(item.cpf)}</td> {/* Formatação do CPF */}
               <td>{item.endereco}</td>
               <td>{item.telefone}</td>
               <td>
@@ -111,6 +99,7 @@ function HistoricoTable({ data, onEdit, onDelete }) {
                   variant="link"
                   className={styles.additionalInfoButton}
                   onClick={() => handleShowFiliado(item)}
+                  style={{ color: "#333" }} // Cor escura para o botão
                 >
                   Ver detalhes
                 </Button>
@@ -120,6 +109,7 @@ function HistoricoTable({ data, onEdit, onDelete }) {
                   variant="link"
                   className={styles.additionalInfoButton}
                   onClick={() => handleShowAdditionalInfo(item)}
+                  style={{ color: "#333" }} // Cor escura para o botão
                 >
                   Ver detalhes
                 </Button>
@@ -144,7 +134,7 @@ function HistoricoTable({ data, onEdit, onDelete }) {
       </table>
 
       {/* Modal para exibir informações do filiado */}
-      <Modal show={showFiliadoModal} onHide={handleCloseFiliado}>
+      <Modal show={showFiliadoModal} onHide={handleCloseFiliado} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>Informações do Filiado</Modal.Title>
         </Modal.Header>
@@ -152,44 +142,68 @@ function HistoricoTable({ data, onEdit, onDelete }) {
           {loadingFiliado ? (
             <p>Carregando informações do filiado...</p>
           ) : error ? (
-            <>
-              <p className="text-danger">{error}</p>
-              <div className="mt-3">
-                <strong>Debug Info:</strong>
-                <pre className="border p-2 mt-2" style={{ fontSize: "0.8em" }}>
-                  {JSON.stringify(
-                    {
-                      selectedBeneficiaryNIS: selectedBeneficiary?.nis,
-                      totalFiliadosLoaded: selectedFiliado !== null ? 1 : 0,
-                    },
-                    null,
-                    2
-                  )}
-                </pre>
-              </div>
-            </>
-          ) : selectedFiliado ? (
-            <div>
-              <p>
-                <strong>Nome do Filiado:</strong> {selectedFiliado.username}
-              </p>
-              <p>
-                <strong>CPF:</strong> {selectedFiliado.cpf}
-              </p>
-              <p>
-                <strong>Data de Nascimento:</strong>{" "}
-                {formatDate(selectedFiliado.data)}
-              </p>
-              <p>
-                <strong>Código do Filiado:</strong> {selectedFiliado.id}
-              </p>
-              <p>
-                <strong>Beneficiário (NIS):</strong>{" "}
-                {selectedFiliado.beneficiario?.codnis}
-              </p>
-            </div>
+            <p className="text-danger">{error}</p>
+          ) : selectedFiliados.length > 0 ? (
+            <Tab.Container
+              id="filiado-tabs"
+              activeKey={activeFiliadoIndex}
+              onSelect={(selectedIndex) => setActiveFiliadoIndex(selectedIndex)}
+            >
+              <Nav variant="pills">
+                {selectedFiliados.map((filiado, index) => (
+                  <Nav.Item key={filiado.id}>
+                    <Nav.Link
+                      eventKey={index}
+                      className={`${styles.customTabLink} ${
+                        activeFiliadoIndex === index
+                          ? styles.customTabLinkActive
+                          : ""
+                      }`}
+                    >
+                      Filiado #{index + 1}
+                    </Nav.Link>
+                  </Nav.Item>
+                ))}
+              </Nav>
+              <Tab.Content>
+                {selectedFiliados.map((filiado, index) => (
+                  <Tab.Pane eventKey={index} key={filiado.id}>
+                    <Table bordered hover size="sm">
+                      <tbody>
+                        <tr>
+                          <td>
+                            <strong>Nome do Filiado</strong>
+                          </td>
+                          <td>{filiado.username}</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong>CPF</strong>
+                          </td>
+                          <td>{formatCPF(filiado.cpf)}</td>{" "}
+                          {/* Formatação do CPF */}
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong>Data de Nascimento</strong>
+                          </td>
+                          <td>{formatDate(filiado.data)}</td>{" "}
+                          {/* Formatação da Data */}
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong>Código do Filiado</strong>
+                          </td>
+                          <td>{filiado.id}</td>
+                        </tr>
+                      </tbody>
+                    </Table>
+                  </Tab.Pane>
+                ))}
+              </Tab.Content>
+            </Tab.Container>
           ) : (
-            <p>Nenhuma informação do filiado disponível.</p>
+            <p>Nenhum filiado encontrado para este beneficiário.</p>
           )}
         </Modal.Body>
         <Modal.Footer>
@@ -200,112 +214,140 @@ function HistoricoTable({ data, onEdit, onDelete }) {
       </Modal>
 
       {/* Modal para exibir informações adicionais */}
-      <Modal show={showAdditionalInfoModal} onHide={handleCloseAdditionalInfo}>
+      <Modal
+        show={showAdditionalInfoModal}
+        onHide={handleCloseAdditionalInfo}
+        size="lg"
+      >
         <Modal.Header closeButton>
           <Modal.Title>Informações Adicionais</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedBeneficiary ? (
-            <div>
-              <p>
-                <strong>Mes:</strong> {selectedBeneficiary.mes}
-              </p>
-              <p>
-                <strong>Famílias PAIF:</strong>{" "}
-                {selectedBeneficiary.familiasPAIF}
-              </p>
-              <p>
-                <strong>Novas Famílias PAIF:</strong>{" "}
-                {selectedBeneficiary.novasFamiliasPAIF}
-              </p>
-              <p>
-                <strong>Famílias Extrema Pobreza:</strong>{" "}
-                {selectedBeneficiary.familiasExtremaPobreza}
-              </p>
-              <p>
-                <strong>Bolsa Família:</strong>{" "}
-                {selectedBeneficiary.bolsaFamilia}
-              </p>
-              <p>
-                <strong>Descumprimento de Condicionalidades:</strong>{" "}
-                {selectedBeneficiary.descumprimentoCondicionalidades}
-              </p>
-              <p>
-                <strong>BPC:</strong> {selectedBeneficiary.bpc}
-              </p>
-              <p>
-                <strong>Trabalho Infantil:</strong>{" "}
-                {selectedBeneficiary.trabalhoInfantil}
-              </p>
-              <p>
-                <strong>Acolhimento:</strong> {selectedBeneficiary.acolhimento}
-              </p>
-              <p>
-                <strong>Atendimentos CRAS:</strong>{" "}
-                {selectedBeneficiary.atendimentosCRAS}
-              </p>
-              <p>
-                <strong>Cadastro Único:</strong>{" "}
-                {selectedBeneficiary.cadastroUnico}
-              </p>
-              <p>
-                <strong>Atualização Cadastral:</strong>{" "}
-                {selectedBeneficiary.atualizacaoCadastral}
-              </p>
-              <p>
-                <strong>BPC Individuos:</strong>{" "}
-                {selectedBeneficiary.bpcIndividuos}
-              </p>
-              <p>
-                <strong>CREAS:</strong> {selectedBeneficiary.creas}
-              </p>
-              <p>
-                <strong>Visitas Domiciliares:</strong>{" "}
-                {selectedBeneficiary.visitasDomiciliares}
-              </p>
-              <p>
-                <strong>Auxílios Natalidade:</strong>{" "}
-                {selectedBeneficiary.auxiliosNatalidade}
-              </p>
-              <p>
-                <strong>Auxílios Funeral:</strong>{" "}
-                {selectedBeneficiary.auxiliosFuneral}
-              </p>
-              <p>
-                <strong>Outros Benefícios:</strong>{" "}
-                {selectedBeneficiary.outrosBeneficios}
-              </p>
-              <p>
-                <strong>Famílias Participantes PAIF:</strong>{" "}
-                {selectedBeneficiary.familiasParticipantesPAIF}
-              </p>
-              <p>
-                <strong>Crianças 0-6 SCFV:</strong>{" "}
-                {selectedBeneficiary.criancas06SCFV}
-              </p>
-              <p>
-                <strong>Crianças 7-14 SCFV:</strong>{" "}
-                {selectedBeneficiary.criancas714SCFV}
-              </p>
-              <p>
-                <strong>Adolescentes 15-17 SCFV:</strong>{" "}
-                {selectedBeneficiary.adolescentes1517SCFV}
-              </p>
-              <p>
-                <strong>Adultos SCFV:</strong> {selectedBeneficiary.adultosSCFV}
-              </p>
-              <p>
-                <strong>Idosos SCFV:</strong> {selectedBeneficiary.idososSCFV}
-              </p>
-              <p>
-                <strong>Palestras e Oficinas:</strong>{" "}
-                {selectedBeneficiary.palestrasOficinas}
-              </p>
-              <p>
-                <strong>Pessoas com Deficiência:</strong>{" "}
-                {selectedBeneficiary.pessoasDeficiencia}
-              </p>
-            </div>
+            <Table bordered hover size="sm">
+              <tbody>
+                <tr>
+                  <td>
+                    <strong>Mes</strong>
+                  </td>
+                  <td>{selectedBeneficiary.mes}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Famílias PAIF</strong>
+                  </td>
+                  <td>{selectedBeneficiary.familiasPAIF}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Novas Famílias PAIF</strong>
+                  </td>
+                  <td>{selectedBeneficiary.novasFamiliasPAIF}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Famílias Extrema Pobreza</strong>
+                  </td>
+                  <td>{selectedBeneficiary.familiasExtremaPobreza}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Bolsa Família</strong>
+                  </td>
+                  <td>{selectedBeneficiary.bolsaFamilia}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Descumprimento de Condicionalidades</strong>
+                  </td>
+                  <td>{selectedBeneficiary.descumprimentoCondicionalidades}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>BPC</strong>
+                  </td>
+                  <td>{selectedBeneficiary.bpc}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Trabalho Infantil</strong>
+                  </td>
+                  <td>{selectedBeneficiary.trabalhoInfantil}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Acolhimento</strong>
+                  </td>
+                  <td>{selectedBeneficiary.acolhimento}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Atendimentos CRAS</strong>
+                  </td>
+                  <td>{selectedBeneficiary.atendimentosCRAS}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Cadastro Único</strong>
+                  </td>
+                  <td>{selectedBeneficiary.cadastroUnico}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Outros Benefícios</strong>
+                  </td>
+                  <td>{selectedBeneficiary.outrosBeneficios}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Famílias Participantes PAIF</strong>
+                  </td>
+                  <td>{selectedBeneficiary.familiasParticipantesPAIF}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Crianças 0-6 SCFV</strong>
+                  </td>
+                  <td>{selectedBeneficiary.criancas06SCFV}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Crianças 7-14 SCFV</strong>
+                  </td>
+                  <td>{selectedBeneficiary.criancas714SCFV}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Adolescentes 15-17 SCFV</strong>
+                  </td>
+                  <td>{selectedBeneficiary.adolescentes1517SCFV}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Adultos SCFV</strong>
+                  </td>
+                  <td>{selectedBeneficiary.adultosSCFV}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Idosos SCFV</strong>
+                  </td>
+                  <td>{selectedBeneficiary.idososSCFV}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Palestras e Oficinas</strong>
+                  </td>
+                  <td>{selectedBeneficiary.palestrasOficinas}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Pessoas com Deficiência</strong>
+                  </td>
+                  <td>{selectedBeneficiary.pessoasDeficiencia}</td>
+                </tr>
+              </tbody>
+            </Table>
           ) : (
             <p>Nenhuma informação adicional disponível.</p>
           )}

@@ -23,7 +23,7 @@ function HistoricoTable({ data, onEdit, onDelete }) {
           <th>CPF do Filiado</th>
           <th>Data de Nascimento</th>
           <th>Beneficiário</th>
-          <th>Benefícios</th>
+
           <th>Ações</th>
         </tr>
       </thead>
@@ -34,13 +34,7 @@ function HistoricoTable({ data, onEdit, onDelete }) {
             <td>{formatCPF(item.cpf)}</td>
             <td>{formatDate(item.data)}</td>
             <td>{item.beneficiario?.username || "Não informado"}</td>
-            <td>
-              {item.beneficiario?.beneficiadoBeneficio?.map((beneficio) => (
-                <span key={beneficio.id} className={styles.beneficioTag}>
-                  {beneficio.nome}
-                </span>
-              )) || "Nenhum benefício"}
-            </td>
+
             <td>
               <Button
                 className={`${styles.actionButton} ${styles.editButton}`}

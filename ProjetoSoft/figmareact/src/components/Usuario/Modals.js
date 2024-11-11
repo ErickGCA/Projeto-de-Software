@@ -42,27 +42,27 @@ export function AddModal({ show, handleClose, handleSave }) {
       <Modal.Body>
         <Form>
           <Form.Group controlId="formUsername">
-            <Form.Label>Username</Form.Label>
+            <Form.Label>Usuário</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Username"
+              placeholder="Usuário"
               name="username"
               value={formData.username}
               onChange={handleChange}
             />
           </Form.Group>
           <Form.Group controlId="formPassword">
-            <Form.Label>Password</Form.Label>
+            <Form.Label>Senha</Form.Label>
             <Form.Control
               type="password"
-              placeholder="Password"
+              placeholder="Senha"
               name="password"
               value={formData.password}
               onChange={handleChange}
             />
           </Form.Group>
           <Form.Group controlId="formProfile">
-            <Form.Label>Profile</Form.Label>
+            <Form.Label>Perfil</Form.Label>
             <Form.Control
               as="select"
               name="profile"

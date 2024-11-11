@@ -41,6 +41,8 @@ public class SecurityConfig {
 
         private static final String[] PUBLIC_MATCHERS = {
                         "/Beneficiario/mes/**",
+                        "/categoria/**",
+                        "/Beneficiario/categoria/**",
                         "/resumo/**" // Permitir o acesso a este endpoint publicamente
         };
 

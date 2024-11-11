@@ -15,4 +15,6 @@ public interface BeneficiarioRepository extends JpaRepository<Beneficiario, Long
 
     Optional<Beneficiario> findById(Long id); // Usando o ID (cod_nis)
 
+    List<Beneficiario> findByCategoriaId(Long categoriaId);
+
 }

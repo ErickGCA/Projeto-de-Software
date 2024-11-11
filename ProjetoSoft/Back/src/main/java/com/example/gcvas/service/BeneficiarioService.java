@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.gcvas.models.Beneficiario;
-import com.example.gcvas.models.ResumoMensal; // Importando o modelo ResumoMensal
+import com.example.gcvas.models.Categoria;
+import com.example.gcvas.models.ResumoMensal;
 import com.example.gcvas.repositories.BeneficiarioRepository;
-import com.example.gcvas.repositories.ResumoMensalRepository; // Importando o repositório ResumoMensal
+import com.example.gcvas.repositories.CategoriaRepository;
+import com.example.gcvas.repositories.ResumoMensalRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -20,6 +22,9 @@ public class BeneficiarioService {
         BeneficiarioRepository beneficiarioRepository;
 
         @Autowired
+        CategoriaRepository categoriaRepository; // Adicione esta injeção
+
+        @Autowired
         ResumoMensalRepository resumoMensalRepository; // Adicionando o repositório para ResumoMensal
 
         public List<Beneficiario> findByMes(String mes) {
@@ -28,6 +33,10 @@ public class BeneficiarioService {
 
         public List<Beneficiario> findAll() {
                 return beneficiarioRepository.findAll();
+        }
+
+        public List<Beneficiario> findByCategoria(Long categoriaId) {
+                return beneficiarioRepository.findByCategoriaId(categoriaId);
         }
 
         public Beneficiario findByid(Long id) {
@@ -41,27 +50,50 @@ public class BeneficiarioService {
 
         @Transactional
         public Beneficiario create(Beneficiario obj) {
-                obj.setId(null); // Certificando-se que o id está nulo para nova inserção
+                obj.setId(null);
 
-                Beneficiario savedBeneficiario = this.beneficiarioRepository.save(obj); // Salva o beneficiário
-                atualizarResumoMensal(savedBeneficiario); // Atualiza o ResumoMensal
+                // Verifica se foi informada uma categoria
+                if (obj.getCategoria() != null && obj.getCategoria().getId() != null) {
+                        Categoria categoria = categoriaRepository.findById(obj.getCategoria().getId())
+                                        .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+                        obj.setCategoria(categoria);
+                }
+
+                Beneficiario savedBeneficiario = this.beneficiarioRepository.save(obj);
+                atualizarResumoMensal(savedBeneficiario);
 
                 return savedBeneficiario;
         }
 
         @Transactional
         public Beneficiario update(Beneficiario newObj) {
-                Beneficiario obj = this.findByid(newObj.getId());
+                try {
+                        System.out.println("Updating Beneficiario with ID: " + newObj.getId());
 
-                // Atualizando campos específicos
-                obj.setTelefone(newObj.getTelefone());
-                obj.setEndereco(newObj.getEndereco());
-                // Atualize outros campos conforme necessário
+                        // Encontrar o Beneficiário pelo ID
+                        Beneficiario obj = this.findByid(newObj.getId());
+                        if (obj == null) {
+                                throw new RuntimeException("Beneficiário não encontrado");
+                        }
 
-                Beneficiario updatedBeneficiario = this.beneficiarioRepository.save(obj); // Salva as alterações
-                atualizarResumoMensal(updatedBeneficiario); // Atualiza o ResumoMensal
+                        System.out.println("Found Beneficiario: " + obj);
 
-                return updatedBeneficiario;
+                        // Atualiza os campos específicos que você deseja
+                        obj.setNis(newObj.getNis());
+                        obj.setUsername(newObj.getUsername());
+                        obj.setEndereco(newObj.getEndereco());
+                        obj.setCpf(newObj.getCpf());
+                        obj.setTelefone(newObj.getTelefone());
+                        obj.setMes(newObj.getMes());
+
+                        System.out.println("Updated Beneficiario: " + obj);
+
+                        // Salvar e retornar o objeto atualizado
+                        return this.beneficiarioRepository.save(obj);
+                } catch (Exception e) {
+                        e.printStackTrace(); // Captura a exceção para melhor rastreamento
+                        throw new RuntimeException("Erro ao atualizar Beneficiário", e);
+                }
         }
 
         public void deleteByid(Long id) {
@@ -142,4 +174,5 @@ public class BeneficiarioService {
                 // Salvar o ResumoMensal atualizado
                 resumoMensalRepository.save(resumoMensal);
         }
+
 }

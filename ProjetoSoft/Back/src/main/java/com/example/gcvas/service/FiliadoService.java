@@ -40,11 +40,15 @@ public class FiliadoService {
 
     @Transactional
     public Filiado update(Filiado newObj) {
-
         Filiado obj = this.findByid(newObj.getId());
 
-        return this.filiadoRepository.save(obj);
+        // Atualizar os dados do objeto existente com os dados de newObj
+        obj.setUsername(newObj.getUsername());
+        obj.setCpf(newObj.getCpf());
+        obj.setData(newObj.getData());
+        obj.setBeneficiario(newObj.getBeneficiario());
 
+        return this.filiadoRepository.save(obj);
     }
 
     public void deleteByid(Long id) {

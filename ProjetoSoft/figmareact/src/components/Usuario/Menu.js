@@ -64,9 +64,9 @@ function HistoricoList() {
     const searchValue = searchTerm.toLowerCase();
     return (
       item.id.toString().includes(searchValue) ||
-      item.username.toLowerCase().includes(searchValue) ||
-      item.password.toLowerCase().includes(searchValue) ||
-      item.profile.toString().includes(searchValue)
+      (item.username && item.username.toLowerCase().includes(searchValue)) ||
+      (item.password && item.password.toLowerCase().includes(searchValue)) ||
+      (item.profile && item.profile.toString().includes(searchValue))
     );
   });
 

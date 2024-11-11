@@ -43,13 +43,15 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
     beneficiario: "", // Supondo que seja um ID ou objeto Beneficiario
     beneficiarioId: "",
     beneficiarioNome: "",
+    categoriaId: "",
   });
-
   const [beneficiarios, setBeneficiarios] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredBeneficiarios, setFilteredBeneficiarios] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [activeTab, setActiveTab] = useState("basics");
+  const [categorias, setCategorias] = useState([]);
+  const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
     if (item) {
@@ -94,6 +96,7 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
         beneficiario: item.beneficiario || "",
         beneficiarioId: item.beneficiario?.id || "",
         beneficiarioNome: item.beneficiario?.username || "",
+        categoriaId: item.categoriaId || "",
         mes: mesesToPortugues[item.mes] || item.mes,
       });
       if (item.beneficiario?.username) {
@@ -101,6 +104,53 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
       }
     }
   }, [item]);
+
+  useEffect(() => {
+    if (!show) {
+      // Resetando os dados do formulário quando o modal for fechado
+      setFormData({
+        id: "",
+        username: "",
+        nis: "",
+        cpf: "",
+        endereco: "",
+        telefone: "",
+        mes: "",
+        familiasPAIF: 0,
+        novasFamiliasPAIF: 0,
+        familiasExtremaPobreza: 0,
+        bolsaFamilia: 0,
+        descumprimentoCondicionalidades: 0,
+        bpc: 0,
+        trabalhoInfantil: 0,
+        acolhimento: 0,
+        atendimentosCRAS: 0,
+        cadastroUnico: 0,
+        atualizacaoCadastral: 0,
+        bpcIndividuos: 0,
+        creas: 0,
+        visitasDomiciliares: 0,
+        auxiliosNatalidade: 0,
+        auxiliosFuneral: 0,
+        outrosBeneficios: 0,
+        familiasParticipantesPAIF: 0,
+        criancas06SCFV: 0,
+        criancas714SCFV: 0,
+        adolescentes1517SCFV: 0,
+        adultosSCFV: 0,
+        idososSCFV: 0,
+        palestrasOficinas: 0,
+        pessoasDeficiencia: 0,
+        filiadoUsername: "",
+        filiadoCpf: "",
+        dataNascimento: "",
+        beneficiario: "", // Resetando para vazio
+        beneficiarioId: "",
+        beneficiarioNome: "",
+        categoriaId: "",
+      });
+    }
+  }, [show]); // Isso vai reagir sempre que o modal for aberto ou fechado
 
   const mesesTraducao = {
     JANEIRO: "JANUARY",
@@ -199,6 +249,31 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
   };
 
   const handleSubmit = async () => {
+    const errors = {};
+
+    // Validação dos campos obrigatórios
+    if (!formData.username) {
+      errors.username = "O campo 'Nome' é obrigatório.";
+    }
+    if (!formData.cpf) {
+      errors.cpf = "O campo 'CPF' é obrigatório.";
+    }
+    if (!formData.endereco) {
+      errors.endereco = "O campo 'Endereço' é obrigatório.";
+    }
+    if (!formData.telefone) {
+      errors.telefone = "O campo 'Telefone' é obrigatório.";
+    }
+    if (!formData.nis) {
+      errors.nis = "O campo 'NIS' é obrigatório.";
+    }
+
+    // Se houver erros, não prosseguir com a submissão
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return; // Evita a execução do código a seguir se houver erros
+    }
+
     try {
       // If we're on the filiado tab and have filiado data, create a filiado first
       if (activeTab === "filiado" && formData.filiadoUsername) {
@@ -216,24 +291,40 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
           await api.post("/filiado", filiadoData);
         } catch (error) {
           console.error("Error creating filiado:", error);
-          // Handle error (maybe show an alert to the user)
           return;
         }
       }
 
-      // Then proceed with the original form submission
       const updatedFormData = {
         ...formData,
         beneficiario: {
           id: formData.beneficiarioId,
         },
+        ...(formData.categoriaId && {
+          categoria: {
+            id: formData.categoriaId,
+          },
+        }),
       };
+
       onSave(updatedFormData);
     } catch (error) {
       console.error("Error in form submission:", error);
-      // Handle error appropriately
     }
   };
+
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const response = await api.get("/categorias");
+        setCategorias(response.data);
+      } catch (err) {
+        console.error("Erro ao buscar categorias:", err);
+      }
+    };
+
+    fetchCategorias();
+  }, []);
 
   const searchStyles = {
     inputContainer: {
@@ -285,305 +376,404 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
           <Tab eventKey="basics" title="Informações Básicas">
             <Form>
               <Form.Group controlId="formUsername">
-                <Form.Label>Nome</Form.Label>
+                <Form.Label>Nome *</Form.Label>
                 <Form.Control
                   type="text"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
+                  required
                 />
+                {formErrors.username && (
+                  <Form.Text className="text-danger">
+                    {formErrors.username}
+                  </Form.Text>
+                )}
               </Form.Group>
               <Form.Group controlId="formNis">
-                <Form.Label>NIS</Form.Label>
+                <Form.Label>NIS *</Form.Label>
                 <Form.Control
                   type="text"
                   name="nis"
                   value={formData.nis}
                   onChange={handleChange}
+                  required
                 />
+                {formErrors.nis && (
+                  <Form.Text className="text-danger">
+                    {formErrors.nis}
+                  </Form.Text>
+                )}
               </Form.Group>
               <Form.Group controlId="formCpf">
-                <Form.Label>CPF</Form.Label>
+                <Form.Label>CPF *</Form.Label>
                 <Form.Control
                   type="text"
                   name="cpf"
                   value={formData.cpf}
                   onChange={handleChange}
+                  required
                 />
+                {formErrors.cpf && (
+                  <Form.Text className="text-danger">
+                    {formErrors.cpf}
+                  </Form.Text>
+                )}
               </Form.Group>
               <Form.Group controlId="formEndereco">
-                <Form.Label>Endereço</Form.Label>
+                <Form.Label>Endereço *</Form.Label>
                 <Form.Control
                   type="text"
                   name="endereco"
                   value={formData.endereco}
                   onChange={handleChange}
+                  required
                 />
+                {formErrors.endereco && (
+                  <Form.Text className="text-danger">
+                    {formErrors.endereco}
+                  </Form.Text>
+                )}
               </Form.Group>
               <Form.Group controlId="formTelefone">
-                <Form.Label>Telefone</Form.Label>
+                <Form.Label>Telefone *</Form.Label>
                 <Form.Control
                   type="text"
                   name="telefone"
                   value={formData.telefone}
+                  onChange={handleChange}
+                  required
+                />
+                {formErrors.telefone && (
+                  <Form.Text className="text-danger">
+                    {formErrors.telefone}
+                  </Form.Text>
+                )}
+                <Form.Group controlId="formCategoria">
+                  <Form.Label>Categoria</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="categoriaId"
+                    value={formData.categoriaId || ""}
+                    onChange={handleChange}
+                  >
+                    <option value="">Selecione uma categoria</option>
+                    {categorias.map((categoria) => (
+                      <option key={categoria.id} value={categoria.id}>
+                        {categoria.nome}
+                      </option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+              </Form.Group>
+            </Form>
+          </Tab>
+
+          <Tab eventKey="bloco1" title="Bloco I - Famílias PAIF">
+            <Form className="p-3">
+              <h5>A. Volume de famílias em acompanhamento pelo PAIF</h5>
+              <Form.Group className="mb-3" controlId="formFamiliasPAIF">
+                <Form.Label>
+                  A.1. Total de famílias em acompanhamento pelo PAIF
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  name="familiasPAIF"
+                  value={formData.familiasPAIF || ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formNovasFamiliasPAIF">
+                <Form.Label>
+                  A.2. Novas famílias inseridas no acompanhamento do PAIF
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  name="novasFamiliasPAIF"
+                  value={formData.novasFamiliasPAIF || ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+
+              <h5>B. Perfil das novas famílias</h5>
+              <Form.Group
+                className="mb-3"
+                controlId="formFamiliasExtremaPobreza"
+              >
+                <Form.Label>
+                  B.1. Famílias em situação de extrema pobreza
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  name="familiasExtremaPobreza"
+                  value={formData.familiasExtremaPobreza || ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formBolsaFamilia">
+                <Form.Label>
+                  B.2. Famílias beneficiárias do Programa Bolsa Família
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  name="bolsaFamilia"
+                  value={formData.bolsaFamilia || ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group
+                className="mb-3"
+                controlId="formDescumprimentoCondicionalidades"
+              >
+                <Form.Label>
+                  B.3. Famílias beneficiárias em descumprimento de
+                  condicionalidades
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  name="descumprimentoCondicionalidades"
+                  value={formData.descumprimentoCondicionalidades || ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formBpc">
+                <Form.Label>
+                  B.4. Famílias com membros beneficiários do BPC
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  name="bpc"
+                  value={formData.bpc || ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formTrabalhoInfantil">
+                <Form.Label>
+                  B.5. Famílias com crianças ou adolescentes em situação de
+                  trabalho infantil
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  name="trabalhoInfantil"
+                  value={formData.trabalhoInfantil || ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formAcolhimento">
+                <Form.Label>
+                  B.6. Famílias com crianças ou adolescentes em Serviço de
+                  Acolhimento
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  name="acolhimento"
+                  value={formData.acolhimento || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
             </Form>
           </Tab>
 
-          <Tab eventKey="additional" title="Informações Adicionais">
-            <Form>
-              <Form.Group controlId="formMes">
-                <Form.Label>Mês</Form.Label>
-                <Form.Select
-                  name="mes"
-                  value={formData.mes ? mesesToPortugues[formData.mes] : ""}
-                  onChange={handleChange}
-                >
-                  <option value="">Selecione um mês</option>
-                  <option value="JANEIRO">Janeiro</option>
-                  <option value="FEVEREIRO">Fevereiro</option>
-                  <option value="MARCO">Março</option>
-                  <option value="ABRIL">Abril</option>
-                  <option value="MAIO">Maio</option>
-                  <option value="JUNHO">Junho</option>
-                  <option value="JULHO">Julho</option>
-                  <option value="AGOSTO">Agosto</option>
-                  <option value="SETEMBRO">Setembro</option>
-                  <option value="OUTUBRO">Outubro</option>
-                  <option value="NOVEMBRO">Novembro</option>
-                  <option value="DEZEMBRO">Dezembro</option>
-                </Form.Select>
-              </Form.Group>
-              <Form.Group controlId="formFamiliasPAIF">
-                <Form.Label>Famílias PAIF</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="familiasPAIF"
-                  value={formData.familiasPAIF}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group controlId="formNovasFamiliasPAIF">
-                <Form.Label>Novas Famílias PAIF</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="novasFamiliasPAIF"
-                  value={formData.novasFamiliasPAIF}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group controlId="formFamiliasExtremaPobreza">
-                <Form.Label>Famílias em Extrema Pobreza</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="familiasExtremaPobreza"
-                  value={formData.familiasExtremaPobreza}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group controlId="formBolsaFamilia">
-                <Form.Label>Bolsa Família</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="bolsaFamilia"
-                  value={formData.bolsaFamilia}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group controlId="formDescumprimentoCondicionalidades">
-                <Form.Label>Descumprimento de Condicionalidades</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="descumprimentoCondicionalidades"
-                  value={formData.descumprimentoCondicionalidades}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group controlId="formBpc">
-                <Form.Label>BPC</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="bpc"
-                  value={formData.bpc}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group controlId="formTrabalhoInfantil">
-                <Form.Label>Trabalho Infantil</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="trabalhoInfantil"
-                  value={formData.trabalhoInfantil}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group controlId="formAcolhimento">
-                <Form.Label>Acolhimento</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="acolhimento"
-                  value={formData.acolhimento}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group controlId="formAtendimentosCRAS">
-                <Form.Label>Atendimentos CRAS</Form.Label>
+          <Tab eventKey="bloco2" title="Bloco II - Atendimentos CRAS">
+            <Form className="p-3">
+              <h5>C. Volume de atendimentos particularizados</h5>
+              <Form.Group className="mb-3" controlId="formAtendimentosCRAS">
+                <Form.Label>
+                  C.1. Total de atendimentos particularizados realizados
+                </Form.Label>
                 <Form.Control
                   type="number"
                   name="atendimentosCRAS"
-                  value={formData.atendimentosCRAS}
+                  value={formData.atendimentosCRAS || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
-              <Form.Group controlId="formCadastroUnico">
-                <Form.Label>Cadastro Único</Form.Label>
+              <Form.Group className="mb-3" controlId="formCadastroUnico">
+                <Form.Label>
+                  C.2. Famílias encaminhadas para inclusão no Cadastro Único
+                </Form.Label>
                 <Form.Control
                   type="number"
                   name="cadastroUnico"
-                  value={formData.cadastroUnico}
+                  value={formData.cadastroUnico || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
-              <Form.Group controlId="formAtualizacaoCadastral">
-                <Form.Label>Atualização Cadastral</Form.Label>
+              <Form.Group className="mb-3" controlId="formAtualizacaoCadastral">
+                <Form.Label>
+                  C.3. Famílias encaminhadas para atualização cadastral
+                </Form.Label>
                 <Form.Control
                   type="number"
                   name="atualizacaoCadastral"
-                  value={formData.atualizacaoCadastral}
+                  value={formData.atualizacaoCadastral || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
-              <Form.Group controlId="formBpcIndividuos">
-                <Form.Label>BPC para Indivíduos</Form.Label>
+              <Form.Group className="mb-3" controlId="formBpcIndividuos">
+                <Form.Label>
+                  C.4. Indivíduos encaminhados para acesso ao BPC
+                </Form.Label>
                 <Form.Control
                   type="number"
                   name="bpcIndividuos"
-                  value={formData.bpcIndividuos}
+                  value={formData.bpcIndividuos || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
-              <Form.Group controlId="formCreas">
-                <Form.Label>CREAS</Form.Label>
+              <Form.Group className="mb-3" controlId="formCreas">
+                <Form.Label>C.5. Famílias encaminhadas para o CREAS</Form.Label>
                 <Form.Control
                   type="number"
                   name="creas"
-                  value={formData.creas}
+                  value={formData.creas || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
-              <Form.Group controlId="formVisitasDomiciliares">
-                <Form.Label>Visitas Domiciliares</Form.Label>
+              <Form.Group className="mb-3" controlId="formVisitasDomiciliares">
+                <Form.Label>C.6. Visitas domiciliares realizadas</Form.Label>
                 <Form.Control
                   type="number"
                   name="visitasDomiciliares"
-                  value={formData.visitasDomiciliares}
+                  value={formData.visitasDomiciliares || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
-              <Form.Group controlId="formAuxiliosNatalidade">
-                <Form.Label>Auxílios Natalidade</Form.Label>
+              <Form.Group className="mb-3" controlId="formAuxiliosNatalidade">
+                <Form.Label>
+                  C.7. Total de auxílios-natalidade concedidos/entregues
+                </Form.Label>
                 <Form.Control
                   type="number"
                   name="auxiliosNatalidade"
-                  value={formData.auxiliosNatalidade}
+                  value={formData.auxiliosNatalidade || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
-              <Form.Group controlId="formAuxiliosFuneral">
-                <Form.Label>Auxílios Funeral</Form.Label>
+              <Form.Group className="mb-3" controlId="formAuxiliosFuneral">
+                <Form.Label>
+                  C.8. Total de auxílios-funeral concedidos/entregues
+                </Form.Label>
                 <Form.Control
                   type="number"
                   name="auxiliosFuneral"
-                  value={formData.auxiliosFuneral}
+                  value={formData.auxiliosFuneral || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
-              <Form.Group controlId="formOutrosBeneficios">
-                <Form.Label>Outros Benefícios</Form.Label>
+              <Form.Group className="mb-3" controlId="formOutrosBeneficios">
+                <Form.Label>
+                  C.9. Outros benefícios eventuais concedidos/entregues
+                </Form.Label>
                 <Form.Control
                   type="number"
                   name="outrosBeneficios"
-                  value={formData.outrosBeneficios}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group controlId="formFamiliasParticipantesPAIF">
-                <Form.Label>Famílias Participantes PAIF</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="familiasParticipantesPAIF"
-                  value={formData.familiasParticipantesPAIF}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group controlId="formCriancas06SCFV">
-                <Form.Label>Crianças 0-6 SCFV</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="criancas06SCFV"
-                  value={formData.criancas06SCFV}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group controlId="formCriancas714SCFV">
-                <Form.Label>Crianças 7-14 SCFV</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="criancas714SCFV"
-                  value={formData.criancas714SCFV}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group controlId="formAdolescentes1517SCFV">
-                <Form.Label>Adolescentes 15-17 SCFV</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="adolescentes1517SCFV"
-                  value={formData.adolescentes1517SCFV}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group controlId="formAdultosSCFV">
-                <Form.Label>Adultos SCFV</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="adultosSCFV"
-                  value={formData.adultosSCFV}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group controlId="formIdososSCFV">
-                <Form.Label>Idosos SCFV</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="idososSCFV"
-                  value={formData.idososSCFV}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group controlId="formPalestrasOficinas">
-                <Form.Label>Palestras e Oficinas</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="palestrasOficinas"
-                  value={formData.palestrasOficinas}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group controlId="formPessoasDeficiencia">
-                <Form.Label>Pessoas com Deficiência</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="pessoasDeficiencia"
-                  value={formData.pessoasDeficiencia}
+                  value={formData.outrosBeneficios || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
             </Form>
           </Tab>
-          <Tab eventKey="filiado" title="Filiado">
+
+          <Tab eventKey="bloco3" title="Bloco III - Coletivos">
+            <Form className="p-3">
+              <h5>D. Volume de atendimentos coletivos</h5>
+              <Form.Group
+                className="mb-3"
+                controlId="formFamiliasParticipantesPAIF"
+              >
+                <Form.Label>
+                  D.1. Famílias participando regularmente de grupos no âmbito do
+                  PAIF
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  name="familiasParticipantesPAIF"
+                  value={formData.familiasParticipantesPAIF || ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formCriancas06SCFV">
+                <Form.Label>
+                  D.2. Crianças de 0 a 6 anos em Serviços de Convivência
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  name="criancas06SCFV"
+                  value={formData.criancas06SCFV || ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formCriancas714SCFV">
+                <Form.Label>
+                  D.3. Crianças/adolescentes de 7 a 14 anos em Serviços de
+                  Convivência
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  name="criancas714SCFV"
+                  value={formData.criancas714SCFV || ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formAdolescentes1517SCFV">
+                <Form.Label>
+                  D.4. Adolescentes de 15 a 17 anos em Serviços de Convivência
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  name="adolescentes1517SCFV"
+                  value={formData.adolescentes1517SCFV || ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formAdultosSCFV">
+                <Form.Label>
+                  D.8. Adultos entre 18 e 59 anos em Serviços de Convivência
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  name="adultosSCFV"
+                  value={formData.adultosSCFV || ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formIdososSCFV">
+                <Form.Label>D.5. Idosos em Serviços de Convivência</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="idososSCFV"
+                  value={formData.idososSCFV || ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formPalestrasOficinas">
+                <Form.Label>
+                  D.6. Pessoas que participaram de palestras, oficinas e outras
+                  atividades coletivas
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  name="palestrasOficinas"
+                  value={formData.palestrasOficinas || ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formPessoasDeficiencia">
+                <Form.Label>
+                  D.7. Pessoas com deficiência participando dos Serviços de
+                  Convivência ou PAIF
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  name="pessoasDeficiencia"
+                  value={formData.pessoasDeficiencia || ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+            </Form>
+          </Tab>
+          {/* <Tab eventKey="filiado" title="Filiado"> 
             <Form>
               <Form.Group controlId="formFiliadoUsername">
                 <Form.Label>Username</Form.Label>
@@ -654,7 +844,7 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
                 </div>
               </Form.Group>
             </Form>
-          </Tab>
+          </Tab>*/}
         </Tabs>
       </Modal.Body>
       <Modal.Footer>

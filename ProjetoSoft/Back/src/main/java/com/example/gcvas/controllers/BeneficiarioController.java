@@ -60,12 +60,10 @@ public class BeneficiarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> putBeneficiario(@PathVariable("id") Long id, @RequestBody Beneficiario newObj) {
-        newObj.setId(id);
-
-        this.beneficiarioService.update(newObj);
-
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Beneficiario> putBeneficiario(@PathVariable("id") Long id, @RequestBody Beneficiario newObj) {
+        newObj.setId(id); // Garantir que o ID é passado para o objeto
+        Beneficiario updatedObj = beneficiarioService.update(newObj); // Atualiza o beneficiário
+        return ResponseEntity.ok(updatedObj);
     }
 
     @DeleteMapping("/{id}")
@@ -73,6 +71,12 @@ public class BeneficiarioController {
         this.beneficiarioService.deleteByid(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/categoria/{categoriaId}")
+    public ResponseEntity<List<Beneficiario>> getBeneficiariosPorCategoria(@PathVariable Long categoriaId) {
+        List<Beneficiario> beneficiarios = beneficiarioService.findByCategoria(categoriaId);
+        return ResponseEntity.ok().body(beneficiarios);
     }
 
 }

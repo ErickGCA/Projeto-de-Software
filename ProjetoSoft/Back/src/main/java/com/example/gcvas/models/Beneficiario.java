@@ -10,8 +10,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,26 +33,30 @@ public class Beneficiario {
     @Column(name = "cod_nis", nullable = false, unique = true)
     private Long id;
 
-    @Column(name = "NIS", nullable = false)
-
+    @Column(name = "NIS", nullable = false, unique = true)
+    @NotNull
+    @Size(min = 11, max = 11)
     private String nis;
 
     @Column(name = "username", nullable = false)
-
+    @NotNull(message = "O campo 'NOme' não pode ser nulo.")
     private String username;
 
     @Column(name = "Endereco", nullable = false)
+    @NotNull(message = "O campo 'Endereço' não pode ser nulo.")
     private String endereco;
 
-    @Column(name = "CPF", nullable = false)
-
+    @Column(name = "CPF", nullable = false, unique = true)
+    @NotNull(message = "O campo 'CPF' não pode ser nulo.")
+    @Size(min = 11, max = 11)
     private String cpf;
 
     @Column(name = "Telefone", nullable = false)
+    @NotNull(message = "O campo 'Telefone' não pode ser nulo.")
     private String telefone;
-    @Column(name = "mes", nullable = false)
 
-    @NotNull(message = "O campo 'mes' não pode ser nulo.")
+    @Column(name = "mes", nullable = false)
+    @NotNull(message = "O campo 'mês' não pode ser nulo.")
     private String mes;
 
     // COLUNA A
@@ -179,5 +185,9 @@ public class Beneficiario {
     @ManyToMany
     @JoinTable(name = "BeneficiadoBeneficio", joinColumns = @JoinColumn(name = "cod_nis"), inverseJoinColumns = @JoinColumn(name = "CodB"))
     Set<Beneficios> beneficiadoBeneficio;
+
+    @ManyToOne
+    @JoinColumn(name = "categoria")
+    private Categoria categoria;
 
 }

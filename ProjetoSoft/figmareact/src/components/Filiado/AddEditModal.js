@@ -132,6 +132,7 @@ const AddEditModal = ({ show, handleClose, title, item, onSave }) => {
   };
 
   const handleSubmit = () => {
+    // Verifica se os campos obrigatórios estão preenchidos
     if (
       !formData.username ||
       !formData.cpf ||
@@ -142,19 +143,19 @@ const AddEditModal = ({ show, handleClose, title, item, onSave }) => {
       return;
     }
 
+    // Cria o objeto de dados a ser enviado
     const submissionData = {
-      ...(formData.id && { id: formData.id }), // Inclui o ID apenas se existir
+      id: formData.id, // Mantém o ID do filiado para a edição
       username: formData.username,
-      cpf: formData.cpf.replace(/\D/g, ""), // Remove formatação do CPF
+      cpf: formData.cpf, // Remove formatação do CPF
       data: formData.data,
-      beneficiario: {
-        id: formData.beneficiario.id,
-      },
+      beneficiario: { id: formData.beneficiario.id }, // Apenas o ID do beneficiário
     };
 
-    // Log para debug
+    // Log para depuração
     console.log("Dados sendo enviados:", submissionData);
 
+    // Chama a função onSave passando os dados do formulário
     onSave(submissionData);
   };
 
