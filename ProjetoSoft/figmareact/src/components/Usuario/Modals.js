@@ -42,7 +42,7 @@ export function AddModal({ show, handleClose, handleSave }) {
       <Modal.Body>
         <Form>
           <Form.Group controlId="formUsername">
-            <Form.Label>Usuário</Form.Label>
+            <Form.Label>Usuário *</Form.Label>
             <Form.Control
               type="text"
               placeholder="Usuário"
@@ -52,7 +52,7 @@ export function AddModal({ show, handleClose, handleSave }) {
             />
           </Form.Group>
           <Form.Group controlId="formPassword">
-            <Form.Label>Senha</Form.Label>
+            <Form.Label>Senha *</Form.Label>
             <Form.Control
               type="password"
               placeholder="Senha"
@@ -62,7 +62,7 @@ export function AddModal({ show, handleClose, handleSave }) {
             />
           </Form.Group>
           <Form.Group controlId="formProfile">
-            <Form.Label>Perfil</Form.Label>
+            <Form.Label>Perfil *</Form.Label>
             <Form.Control
               as="select"
               name="profile"

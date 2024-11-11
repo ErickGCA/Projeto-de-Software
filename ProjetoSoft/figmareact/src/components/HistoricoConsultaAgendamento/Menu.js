@@ -13,7 +13,7 @@ function HistoricoList() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [historicoData, setHistoricoData] = useState([]);
-  const itemsPerPage = 6; 
+  const itemsPerPage = 6;
 
   // Função para buscar dados do backend
   useEffect(() => {
@@ -21,22 +21,22 @@ function HistoricoList() {
       try {
         // Buscar dados de Agendamentos
         const agendarResponse = await api.get("/agendar");
-        const agendamentos = agendarResponse.data.map(item => ({
+        const agendamentos = agendarResponse.data.map((item) => ({
           ...item,
           categoria: "Agendamento",
           dataConsulta: item.dataconsu,
-          horarioConsulta: item.horarioConsulta // Verifique o nome correto
+          horarioConsulta: item.horarioConsulta, // Verifique o nome correto
         }));
 
         console.log("Agendamentos:", agendamentos);
 
         // Buscar dados de Encaminhamentos
         const encaminharResponse = await api.get("/encaminhar");
-        const encaminhamentos = encaminharResponse.data.map(item => ({
+        const encaminhamentos = encaminharResponse.data.map((item) => ({
           ...item,
           categoria: "Encaminhamento",
-          
-          horarioConsulta: item.horario // Mapeia 'horario' para 'horarioConsulta'
+
+          horarioConsulta: item.horario, // Mapeia 'horario' para 'horarioConsulta'
         }));
 
         console.log("Encaminhamentos:", encaminhamentos);
@@ -45,7 +45,9 @@ function HistoricoList() {
         const combinedData = [...agendamentos, ...encaminhamentos];
 
         // Ordenar por data (mais recentes primeiro)
-        combinedData.sort((a, b) => new Date(b.dataConsulta) - new Date(a.dataConsulta));
+        combinedData.sort(
+          (a, b) => new Date(b.dataConsulta) - new Date(a.dataConsulta)
+        );
 
         setHistoricoData(combinedData);
       } catch (error) {
@@ -75,8 +77,10 @@ function HistoricoList() {
         await api.put(`/encaminhar/${updatedItem.id}`, updatedItem);
       }
       // Atualiza o estado com o item atualizado
-      setHistoricoData(prevData =>
-        prevData.map(item => (item.id === updatedItem.id ? updatedItem : item))
+      setHistoricoData((prevData) =>
+        prevData.map((item) =>
+          item.id === updatedItem.id ? updatedItem : item
+        )
       );
     } catch (error) {
       console.error("Erro ao salvar as alterações", error);
@@ -92,7 +96,9 @@ function HistoricoList() {
         await api.delete(`/encaminhar/${itemToDelete.id}`);
       }
       // Remove o item do estado
-      setHistoricoData(prevData => prevData.filter(item => item.id !== itemToDelete.id));
+      setHistoricoData((prevData) =>
+        prevData.filter((item) => item.id !== itemToDelete.id)
+      );
     } catch (error) {
       console.error("Erro ao deletar o item", error);
       // Aqui você pode adicionar um feedback visual para o usuário
@@ -106,8 +112,11 @@ function HistoricoList() {
       (item.nome && item.nome.toLowerCase().includes(searchValue)) ||
       (item.cpf && item.cpf.toLowerCase().includes(searchValue)) ||
       (item.setor && item.setor.toLowerCase().includes(searchValue)) ||
-      (item.dataConsulta && item.dataConsulta.toLowerCase().includes(searchValue)) ||
-      (item.horarioConsulta && item.horarioConsulta.toLowerCase().includes(searchValue))
+      (item.dataConsulta &&
+        typeof item.dataConsulta === "string" &&
+        item.dataConsulta.toLowerCase().includes(searchValue)) ||
+      (item.horarioConsulta &&
+        item.horarioConsulta.toLowerCase().includes(searchValue))
     );
   });
 

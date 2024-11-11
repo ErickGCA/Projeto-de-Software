@@ -34,12 +34,6 @@ export function HistoricoTable({ items, onEdit, onDelete }) {
             <td>{item.setor || "-"}</td>
             <td>
               <Button
-                className={`${styles.actionButton} ${styles.editButton}`}
-                onClick={() => onEdit(item)}
-              >
-                Editar
-              </Button>
-              <Button
                 className={`${styles.actionButton} ${styles.deleteButton}`}
                 onClick={() => onDelete(item)}
               >

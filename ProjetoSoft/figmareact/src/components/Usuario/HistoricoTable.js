@@ -8,7 +8,7 @@ function Table({ items, onEdit, onToggleActive }) {
       <thead>
         <tr>
           <th>Login</th>
-          <th>Senha</th>
+
           <th>Profile</th>
           <th>Status</th>
           <th>Ações</th>
@@ -18,7 +18,7 @@ function Table({ items, onEdit, onToggleActive }) {
         {items.map((item) => (
           <tr key={item.id} className={!item.active ? styles.inactiveRow : ""}>
             <td>{item.username}</td>
-            <td>{item.password}</td>
+
             <td>{item.profile}</td>
             <td>{item.active ? "Ativo" : "Inativo"}</td>
             <td>

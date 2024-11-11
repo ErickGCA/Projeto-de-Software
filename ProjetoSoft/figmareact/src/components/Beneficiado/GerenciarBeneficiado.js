@@ -41,20 +41,30 @@ function GerenciarBeneficiado() {
             <p>
               Nesta página, você pode gerenciar as informações dos beneficiados
               registrados no sistema. Utilize as funcionalidades abaixo para
-              acessar o histórico, editar ou excluir registros.
+              criar um beneficiario, associar com o RMA, ver detalhes dos
+              filiados e dos RMAS.
             </p>
             <ol>
               <li>
-                <b>Histórico:</b> Consulte o histórico de cada beneficiado para
-                visualizar interações e dados relevantes.
+                <b>CRIAR BENEFICIARIO:</b> Na aba de criar beneficiario, mais
+                especificamente no "Informações Adicionais", todos os campos são
+                obrigatórios, com excessão da categoria Para a lista de
+                categorias aparecer, você deverá criar o beneficio antes, em
+                Beneficios -D "Gerenciar Beneficios". Os demais blocos (l, ll,
+                lll), são referentes ao RMA, nenhuma das opções são
+                obrigatórias.
               </li>
               <li>
-                <b>Editar Beneficiado:</b> Altere as informações necessárias do
+                <b>Editar e Excluir:</b> Altere as informações necessárias do
                 beneficiado, garantindo que todos os dados estejam atualizados.
+                Por questões de segurança, não é possivel editar o RMA e nem
+                exclui-lo, PORTANTO, cuidado
               </li>
               <li>
-                <b>Excluir Beneficiado:</b> Caso precise remover o registro, use
-                a função de exclusão com cuidado, pois essa ação é permanente.
+                <b>
+                  Nos campos ver detalhes é possivel ver os detalhes do RMA
+                  associado a determinado beneficiario e os Filiados
+                </b>
               </li>
             </ol>
             <button

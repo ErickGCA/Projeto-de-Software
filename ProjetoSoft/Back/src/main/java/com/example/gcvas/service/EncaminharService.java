@@ -75,7 +75,7 @@ public class EncaminharService {
         Encaminhar obj = this.findByid(newObj.getId());
 
         obj.setTelefone(newObj.getTelefone());
-        obj.setEndereco(newObj.getEndereco());
+
         obj.setSetor(newObj.getSetor());
         logger.info("Atualizando encaminhamento: {}", obj);
 

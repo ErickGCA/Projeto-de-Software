@@ -1,53 +1,46 @@
 import React, { useState } from "react";
-import api from "../../api/api"; // Importe o seu cliente de API
-import logoImage from "../images/logo (1).png"; // Ajuste o caminho conforme sua estrutura
+import {
+  MdAccessTime,
+  MdDateRange,
+  MdPerson,
+  MdPhone,
+  MdWork,
+} from "react-icons/md";
+import api from "../../api/api";
 import styles from "./AgendarConsulta.module.css";
 import FormInput from "./FormInput";
+import Sidebar from "./SidebarButton"; // Importando Sidebar
 
 const camposFormulario = [
   {
-    label: "Nome",
+    label: "Nome *",
+    icon: <MdPerson />,
     width: 412,
     id: "nome",
-    placeholder: "Digite o nome completo",
   },
+
   {
-    label: "CPF",
-    id: "cpf",
-    placeholder: "Digite o CPF",
-  },
-  {
-    label: "Telefone",
+    label: "Telefone *",
+    icon: <MdPhone />,
     id: "telefone",
-    placeholder: "Digite o telefone",
   },
+
   {
-    label: "Endereço",
-    id: "endereco",
-    placeholder: "Digite o endereço",
-  },
-  {
-    label: "Data de Nascimento",
-    id: "dataNascimento",
-    type: "date",
-    placeholder: "Selecione a data de nascimento",
-  },
-  {
-    label: "Setor",
+    label: "Setor *",
+    icon: <MdWork />,
     id: "setor",
-    placeholder: "Digite o setor",
   },
   {
-    label: "Data da Consulta",
+    label: "Data da Consulta *",
+    icon: <MdDateRange />,
     id: "dataConsulta",
     type: "date",
-    placeholder: "Selecione a data da consulta",
   },
   {
-    label: "Horário da Consulta",
+    label: "Horário da Consulta *",
+    icon: <MdAccessTime />,
     id: "horarioConsulta",
     type: "time",
-    placeholder: "Selecione o horário da consulta",
   },
 ];
 
@@ -66,6 +59,7 @@ function AgendarConsulta() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -117,32 +111,34 @@ function AgendarConsulta() {
     }
   };
 
+  const handleBackClick = () => {
+    window.history.back();
+  };
+
+  const handleHelpClick = () => {
+    setShowHelp(true);
+  };
+
   return (
     <div className={styles.container}>
       <main className={styles.background}>
         <form className={styles.formWrapper} onSubmit={handleSubmit}>
-          <aside className={styles.sidebar}>
-            <img
-              loading="lazy"
-              src={logoImage}
-              alt="Logo da Secretaria"
-              className={styles.logo}
-            />
-            <h2 className={styles.sidebarTitle}>
-              Secretaria de Assistência Social de Quatiguá
-            </h2>
-          </aside>
+          <Sidebar
+            onBackClick={handleBackClick} // Passando a função para Sidebar
+            onHelpClick={handleHelpClick}
+          />
           <div className={styles.formContent}>
             <h1 className={styles.formTitle}>Agendar</h1>
             {camposFormulario.map((input, index) => (
               <FormInput
                 key={index}
                 label={input.label}
+                icon={input.icon}
+                width={input.width}
                 type={input.type}
                 id={input.id}
                 value={formData[input.id]}
                 onChange={handleChange}
-                placeholder={input.placeholder}
               />
             ))}
             {error && <div className={styles.errorMessage}>{error}</div>}
@@ -160,6 +156,57 @@ function AgendarConsulta() {
             </button>
           </div>
         </form>
+
+        {showHelp && (
+          <div
+            className={styles.modalOverlay}
+            onClick={() => setShowHelp(false)}
+          >
+            <div
+              className={styles.modalContent}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2>Instruções para Agendar Consulta</h2>
+              <p>
+                Nesta página, você pode agendar uma nova consulta preenchendo os
+                campos obrigatórios abaixo. Certifique-se de seguir as
+                instruções de preenchimento para garantir que os dados estejam
+                corretos.
+              </p>
+              <ol>
+                <li>
+                  <b>Nome:</b> Informe o nome completo do usuário. Mínimo de
+                  caracteres: 2, Máximo de caracteres: 50.
+                </li>
+                <li>
+                  <b>Telefone:</b> Informe o telefone de contato do usuário.
+                </li>
+                <li>
+                  <b>Setor:</b> Escolha ou insira o setor responsável pela
+                  consulta.
+                </li>
+                <li>
+                  <b>Data da Consulta:</b> Informe a data desejada no formato
+                  DD/MM/AAAA.
+                </li>
+                <li>
+                  <b>Horário da Consulta:</b> Insira o horário desejado no
+                  formato HH:MM.
+                </li>
+                <li>
+                  <b>Importante:</b> Verifique todos os campos antes de
+                  confirmar o agendamento, todos são obrigatorios.
+                </li>
+              </ol>
+              <button
+                className={styles.closeButton}
+                onClick={() => setShowHelp(false)}
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

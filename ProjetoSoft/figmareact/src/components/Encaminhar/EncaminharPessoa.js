@@ -1,29 +1,15 @@
 import React, { useEffect, useState } from "react";
-import {
-  MdDateRange,
-  MdLocationOn,
-  MdPerson,
-  MdPhone,
-  MdWork,
-} from "react-icons/md";
+import { MdArrowBack, MdPerson, MdPhone, MdWork } from "react-icons/md";
 import api from "../../api/api";
 import logoImage from "../images/logo (1).png";
 import styles from "./EncaminharPessoa.module.css";
 import FormInput from "./FormInput";
 
 const formInputs = [
-  { label: "Nome", icon: <MdPerson />, width: 412, id: "username" },
-  { label: "CPF", icon: <MdPerson />, width: 217, id: "cpf" },
-  { label: "Telefone", icon: <MdPhone />, width: 217, id: "telefone" },
-  { label: "Endereço", icon: <MdLocationOn />, width: 412, id: "endereco" },
-  {
-    label: "Data de Nascimento",
-    icon: <MdDateRange />,
-    width: 217,
-    id: "data",
-    type: "date",
-  },
-  { label: "Setor", icon: <MdWork />, width: 217, id: "setor" },
+  { label: "Nome * ", icon: <MdPerson />, width: 412, id: "username" },
+  { label: "Telefone *", icon: <MdPhone />, width: 217, id: "telefone" },
+
+  { label: "Setor *", icon: <MdWork />, width: 217, id: "setor" },
 ];
 
 function EncaminharPessoa() {
@@ -45,6 +31,7 @@ function EncaminharPessoa() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredBeneficiarios, setFilteredBeneficiarios] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [showHelp, setShowHelp] = useState(false); // Estado para controlar a exibição do modal de ajuda
 
   useEffect(() => {
     const fetchBeneficiarios = async () => {
@@ -239,9 +226,64 @@ function EncaminharPessoa() {
             >
               {loading ? "Enviando..." : "Enviar"}
             </button>
+
+            {/* Botão de ajuda */}
+            <button
+              type="button"
+              className={styles.helpButton}
+              onClick={() => setShowHelp(true)}
+            >
+              ?
+            </button>
+
+            {/* Botão de voltar */}
+            <button
+              type="button"
+              className={styles.backButton}
+              onClick={() => window.history.back()}
+            >
+              <MdArrowBack /> {/* Exibindo a seta de voltar */}
+            </button>
           </div>
         </form>
       </main>
+
+      {/* Modal de ajuda */}
+      {showHelp && (
+        <div className={styles.modalOverlay} onClick={() => setShowHelp(false)}>
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2>Instruções para Encaminhar Pessoa</h2>
+            <p>
+              Preencha os campos abaixo para encaminhar uma pessoa corretamente.
+            </p>
+            <ol>
+              <li>
+                <b>Beneficiario:</b> Informe o nome do beneficiario que
+                pertence, basta pesquisar pelo CPF ou CÓDIGO NIS para evitar
+                ambiguidades.
+              </li>
+              <li>
+                <b>Nome:</b> Informe o nome completo do beneficiário.
+              </li>
+              <li>
+                <b>Telefone:</b> Informe o número de telefone do beneficiário.
+              </li>
+              <li>
+                <b>Setor:</b> Selecione o setor relacionado ao beneficiário.
+              </li>
+            </ol>
+            <button
+              className={styles.closeHelpButton}
+              onClick={() => setShowHelp(false)}
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

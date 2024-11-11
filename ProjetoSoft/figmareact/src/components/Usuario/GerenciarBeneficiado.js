@@ -74,14 +74,17 @@ function GerenciarUsuario() {
               </p>
 
               <li>
-                <b> Botão Excluir:</b>
+                <b> Botão Desativar:</b>
               </li>
               <p>
-                Se for necessário remover um usuário do sistema, clique no botão
-                "Excluir" ao lado do registro. Uma mensagem de confirmação
-                aparecerá para garantir que você deseja excluir o usuário.
-                Atenção: A exclusão de um usuário é permanente e não poderá ser
-                desfeita. Utilize essa opção com cautela.
+                Se for necessário desativar um usuário do sistema, clique no
+                botão "Desativar" ao lado do registro. Para ativar, basta clicar
+                novamente.
+              </p>
+              <p>
+                O perfil secretaria é designado para as secretárias. O ADM para
+                a assistente social com maior hierarquia. ASSISTENTE para as
+                demais assistentes e o OUTROS para os demais usuarios
               </p>
             </ol>
 
@@ -93,7 +96,7 @@ function GerenciarUsuario() {
               </li>
               <li>
                 Revise as informações cuidadosamente antes de salvar alterações
-                ou excluir um usuário para evitar erros.
+                ou desativar um usuário para evitar erros.
               </li>
               <li>
                 Caso precise adicionar um novo usuário, verifique se todos os

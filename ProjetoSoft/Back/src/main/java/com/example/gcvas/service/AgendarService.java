@@ -17,41 +17,45 @@ public class AgendarService {
     @Autowired
     AgendarRepository agendarRepository;
 
-
     public List<Agendar> findAll() {
         return agendarRepository.findAll();
     }
-    
-     public Agendar findByid(Long id) {
 
-       Optional<Agendar> obj = this.agendarRepository.findById(id);
+    public Agendar findByid(Long id) {
 
-        if(obj.isPresent()){
+        Optional<Agendar> obj = this.agendarRepository.findById(id);
+
+        if (obj.isPresent()) {
             return obj.get();
         }
-        throw new RuntimeException("Agendamento não encontrado {id:"+id+"} ");
+        throw new RuntimeException("Agendamento não encontrado {id:" + id + "} ");
     }
 
     @Transactional
-    public Agendar create(Agendar obj){
+    public Agendar create(Agendar obj) {
         obj.setId(null);
 
-       return  this.agendarRepository.save(obj);
+        return this.agendarRepository.save(obj);
     }
 
     @Transactional
-    public Agendar update(Agendar newObj){
+    public Agendar update(Agendar newObj) {
 
-        Agendar obj =  this.findByid(newObj.getId());
+        Agendar obj = this.findByid(newObj.getId());
 
-        obj.setSetor(newObj.getSetor());
-        obj.setHora(newObj.getHora());
-  
-          return this.agendarRepository.save(obj);
-  
-      }
+        obj.setUsername(newObj.getUsername()); // Nome de usuário
 
-      public void deleteByid(Long id){
+        obj.setTelefone(newObj.getTelefone()); // Telefone
+
+        obj.setSetor(newObj.getSetor()); // Setor
+        obj.setDataconsu(newObj.getDataconsu()); // Data da consulta
+        obj.setHora(newObj.getHora()); // Horário da consulta
+
+        return this.agendarRepository.save(obj);
+
+    }
+
+    public void deleteByid(Long id) {
         try {
             this.agendarRepository.deleteById(id);
         } catch (Exception e) {

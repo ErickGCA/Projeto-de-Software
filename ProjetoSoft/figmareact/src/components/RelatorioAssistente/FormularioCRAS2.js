@@ -341,18 +341,9 @@ const FormularioCRAS2 = forwardRef(({ dados }, ref) => {
       </div>
 
       <div className="mt-6 text-black">
-        <div>Nome e cargo da pessoa responsável no CRAS pelas informações:</div>
-        <div className="mt-2 border-b border-black">
-          {dados?.responsavel ||
-            "_________________________________________________________________________"}
-        </div>
+        <div className="mt-2 border-b border-black"></div>
         <div className="mt-4">
-          <div>Data: _____/_____/_____</div>
-          <div className="mt-4 text-center">
-            <div className="border-t border-black pt-2 inline-block">
-              Assinatura
-            </div>
-          </div>
+          <div className="mt-4 text-center"></div>
         </div>
       </div>
     </div>

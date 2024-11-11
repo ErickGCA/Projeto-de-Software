@@ -10,7 +10,7 @@ export function EditModal({ show, handleClose, selectedItem, handleSave }) {
     cpf: "",
     telefone: "",
     dataConsulta: "",
-    horarioConsulta: ""
+    horarioConsulta: "",
   });
 
   useEffect(() => {
@@ -22,16 +22,16 @@ export function EditModal({ show, handleClose, selectedItem, handleSave }) {
         cpf: selectedItem.cpf || "",
         telefone: selectedItem.telefone || "",
         dataConsulta: selectedItem.dataConsulta || "",
-        horarioConsulta: selectedItem.horarioConsulta || "" // Certifique-se de que este campo está correto
+        horarioConsulta: selectedItem.horarioConsulta || "", // Certifique-se de que este campo está correto
       });
     }
   }, [selectedItem]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevData => ({
+    setFormData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
     }));
   };
 

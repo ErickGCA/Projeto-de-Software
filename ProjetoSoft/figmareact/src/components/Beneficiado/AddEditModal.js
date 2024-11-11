@@ -212,11 +212,26 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
   }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: name === "mes" ? mesesTraducao[value] || value : value,
-    });
+    const { name, options } = e.target;
+
+    if (name === "categoriasIds") {
+      // Converter os options selecionados para array
+      const selectedValues = Array.from(options)
+        .filter((option) => option.selected)
+        .map((option) => option.value);
+
+      setFormData({
+        ...formData,
+        [name]: selectedValues,
+      });
+    } else {
+      // Manter o comportamento original para outros campos
+      const { value } = e.target;
+      setFormData({
+        ...formData,
+        [name]: name === "mes" ? mesesTraducao[value] || value : value,
+      });
+    }
   };
 
   const handleBeneficiarioSearchChange = (e) => {
@@ -472,6 +487,31 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
           <Tab eventKey="bloco1" title="Bloco I - Famílias PAIF">
             <Form className="p-3">
               <h5>A. Volume de famílias em acompanhamento pelo PAIF</h5>
+
+              <Form.Group className="mb-3" controlId="formMes">
+                <Form.Label>Mês</Form.Label>
+                <Form.Select
+                  name="mes"
+                  value={formData.mes ? mesesToPortugues[formData.mes] : ""}
+                  onChange={handleChange}
+                >
+                  <option value="">Selecione um mês</option>
+                  <option value="JANEIRO">Janeiro</option>
+                  <option value="FEVEREIRO">Fevereiro</option>
+                  <option value="MARCO">Março</option>
+                  <option value="ABRIL">Abril</option>
+                  <option value="MAIO">Maio</option>
+                  <option value="JUNHO">Junho</option>
+                  <option value="JULHO">Julho</option>
+                  <option value="AGOSTO">Agosto</option>
+                  <option value="SETEMBRO">Setembro</option>
+                  <option value="OUTUBRO">Outubro</option>
+                  <option value="NOVEMBRO">Novembro</option>
+                  <option value="DEZEMBRO">Dezembro</option>
+                </Form.Select>
+              </Form.Group>
+
+              <h5>Informações Adicionais</h5>
               <Form.Group className="mb-3" controlId="formFamiliasPAIF">
                 <Form.Label>
                   A.1. Total de famílias em acompanhamento pelo PAIF
