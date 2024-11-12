@@ -18,10 +18,10 @@ public class TipoUserConverter implements AttributeConverter<TipoUser, Integer> 
             case SECRETARIA -> {
                 return 1;
             }
-            case GERENTE -> {
+            case OUTROS -> {
                 return 2;
             }
-            case ANALISTA -> {
+            case ASSISTENTE -> {
                 return 3;
             }
             default -> throw new IllegalArgumentException(attribute + " not supported.");
@@ -41,10 +41,10 @@ public class TipoUserConverter implements AttributeConverter<TipoUser, Integer> 
                 return TipoUser.SECRETARIA;
             }
             case 2 -> {
-                return TipoUser.GERENTE;
+                return TipoUser.OUTROS;
             }
             case 3 -> {
-                return TipoUser.ANALISTA;
+                return TipoUser.ASSISTENTE;
             }
             default -> throw new IllegalArgumentException(dbData + " not supported.");
         }

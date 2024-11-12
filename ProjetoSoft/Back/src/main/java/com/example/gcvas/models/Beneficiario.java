@@ -42,8 +42,7 @@ public class Beneficiario {
     @NotNull(message = "O campo 'NOme' não pode ser nulo.")
     private String username;
 
-    @Column(name = "Endereco", nullable = false)
-    @NotNull(message = "O campo 'Endereço' não pode ser nulo.")
+    @Column(name = "Endereco")
     private String endereco;
 
     @Column(name = "CPF", nullable = false, unique = true)

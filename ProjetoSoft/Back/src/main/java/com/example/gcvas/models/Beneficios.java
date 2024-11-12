@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,11 +29,12 @@ public class Beneficios {
     @Column(name = "CodB", nullable = false, unique = true)
     private Long id;
 
-    @Column(name = "Categoria", nullable = false, length = 50)
+    @Column(name = "Categoria", unique = true, nullable = false, length = 50)
+    @NotNull
     private String categoria;
 
     @Column(name = "Descricao", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
-    @Size(min = 4, max = 50)
+
     @NotBlank
     private String desc_beneficio;
 

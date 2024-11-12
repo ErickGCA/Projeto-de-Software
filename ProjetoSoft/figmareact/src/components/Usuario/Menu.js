@@ -44,8 +44,7 @@ function HistoricoList() {
       await fetchHistoricoData();
       setShowAddModal(false);
     } catch (error) {
-      console.error("Erro ao criar usuário", error);
-      alert("Erro ao criar usuário. Tente novamente.");
+      alert("Erro ao criar usuário, o usuário deve ser único.");
     }
   };
 

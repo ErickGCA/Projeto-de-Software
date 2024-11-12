@@ -1,13 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom"; // Importando Link
-import styles from "./MenuSecretaria.module.css";
+import styles from "./MenuAssistente.module.css";
 
 function Menu() {
   const menuItems = [
-    { text: "Agendar Consulta", path: "/agendar" },
-    { text: "Encaminhar Usuário", path: "/encaminhar" }, // Ajuste o caminho conforme necessário
-    { text: "Agendamentos e Encaminhamentos", path: "/consultarhistoricoagen" }, // Ajuste o caminho conforme necessário
+    { text: "Beneficiário", path: "/gerenciarbeneficiario" },
+    { text: "Benefícios", path: "/beneficios" },
+    //{ text: "Requisições", path: "/requisicaosecretaria" },
+    { text: "Filiado", path: "/filiado" },
+    //{ text: "RMA", path: "/RMA" },
     { text: "Relatório RMA", path: "/relatorio" },
+    // { text: "Historico RMA", path: "/RMAA" },
   ];
 
   return (

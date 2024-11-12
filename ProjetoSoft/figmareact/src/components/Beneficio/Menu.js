@@ -107,13 +107,13 @@ function HistoricoList() {
       <div className={styles.searchContainer}>
         <input
           type="text"
-          placeholder="Pesquisar categoria..."
+          placeholder="Pesquisar beneficio..."
           value={searchTerm}
           onChange={handleSearch}
           className={styles.searchInput}
         />
         <Button onClick={handleShowAddModal} className={styles.createButton}>
-          Nova Categoria
+          Criar
         </Button>
       </div>
 

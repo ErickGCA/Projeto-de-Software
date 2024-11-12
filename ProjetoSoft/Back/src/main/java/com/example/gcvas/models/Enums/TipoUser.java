@@ -9,7 +9,7 @@ public enum TipoUser {
 
     ADM,
     SECRETARIA,
-    GERENTE,
-    ANALISTA
+    OUTROS,
+    ASSISTENTE
 
 }

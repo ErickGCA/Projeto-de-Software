@@ -11,6 +11,7 @@ import ConsultarHistoricoAgen from "./components/HistoricoConsultaAgendamento/Co
 import HistoricoRMA from "./components/HistoricoRMA/HistoricoRMA";
 import LoginPage from "./components/Login/LoginPage";
 import MenuAssistente from "./components/MenuAssistente/MenuAssistente";
+import MenuAssistente2 from "./components/MenuNovaAssistente/MenuAssistente";
 import MenuOutros from "./components/MenuOutros/MenuOutros";
 import MenuSecretaria from "./components/MenuSecretaria/MenuSecretaria";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
@@ -46,6 +47,14 @@ function App() {
           element={
             <PrivateRoute>
               <AgendarConsulta />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/assistente"
+          element={
+            <PrivateRoute>
+              <MenuAssistente2 />
             </PrivateRoute>
           }
         />

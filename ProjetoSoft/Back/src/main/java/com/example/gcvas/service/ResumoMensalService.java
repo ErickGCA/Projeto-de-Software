@@ -52,6 +52,7 @@ public class ResumoMensalService {
                 });
         }
 
+        @Transactional
         public void incrementarResumo(ResumoMensal resumoMensal, Beneficiario beneficiario) {
                 // Log do ResumoMensal antes da atualização
 
@@ -205,6 +206,8 @@ public class ResumoMensalService {
                                                 + (beneficiario.getPessoasDeficiencia() != null
                                                                 ? beneficiario.getPessoasDeficiencia()
                                                                 : 0));
+                resumoMensalRepository.save(resumoMensal);
 
         }
+
 }

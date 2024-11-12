@@ -73,6 +73,7 @@ export function AddModal({ show, handleClose, handleSave }) {
               <option value="0">ADM</option>
               <option value="1">SECRETARIA</option>
               <option value="2">OUTROS</option>
+              <option value="3">ASSISTENTE</option>
               {/* <option value="3">ANALISTA</option> */}
             </Form.Control>
           </Form.Group>
@@ -175,7 +176,7 @@ export function EditModal({ show, handleClose, selectedItem, handleSave }) {
               <option value="0">ADM</option>
               <option value="1">SECRETARIA</option>
               <option value="2">GERENTE</option>
-              <option value="3">ANALISTA</option>
+              <option value="3">ASSISTENTE</option>
             </Form.Control>
           </Form.Group>
         </Form>

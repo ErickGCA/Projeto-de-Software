@@ -79,7 +79,6 @@ function HistoricoTable({ data, onEdit, onDelete }) {
             <th>Beneficiário</th>
             <th>NIS</th>
             <th>CPF</th>
-            <th>Endereço</th>
             <th>Telefone</th>
             <th>Filiado</th>
             <th>Adicionais</th>
@@ -92,7 +91,6 @@ function HistoricoTable({ data, onEdit, onDelete }) {
               <td>{item.username}</td>
               <td>{item.nis}</td>
               <td>{formatCPF(item.cpf)}</td> {/* Formatação do CPF */}
-              <td>{item.endereco}</td>
               <td>{item.telefone}</td>
               <td>
                 <Button

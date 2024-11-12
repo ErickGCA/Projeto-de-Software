@@ -144,7 +144,7 @@ function HistoricoTable({ data, onEdit, onDelete }) {
       <table className={styles.historicoTable}>
         <thead>
           <tr>
-            <th>Categoria</th>
+            <th>Beneficio</th>
             <th>Descrição</th>
             <th>Beneficiários</th>
             <th>Ações</th>

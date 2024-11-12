@@ -212,25 +212,51 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
   }, []);
 
   const handleChange = (e) => {
-    const { name, options } = e.target;
+    const { name, value, type, checked } = e.target;
 
-    if (name === "categoriasIds") {
-      // Converter os options selecionados para array
-      const selectedValues = Array.from(options)
+    if (type === "checkbox") {
+      const currentValues = Array.isArray(formData[name]) ? formData[name] : [];
+      let newValue;
+
+      if (checked) {
+        // Se marcado, usamos apenas o valor atual
+        newValue = value;
+      } else {
+        // Se desmarcado, limpamos o valor
+        newValue = "";
+      }
+
+      setFormData((prevData) => ({
+        ...prevData,
+        categoriaId: newValue, // Armazena apenas um valor
+        categoria: {
+          id: newValue, // Atualiza o ID da categoria
+        },
+      }));
+
+      console.log("Valor atualizado:", newValue);
+    } else if (name === "categoriasIds" && e.target.options) {
+      const selectedValues = Array.from(e.target.options)
         .filter((option) => option.selected)
         .map((option) => option.value);
 
-      setFormData({
-        ...formData,
+      setFormData((prevData) => ({
+        ...prevData,
         [name]: selectedValues,
-      });
+      }));
     } else {
-      // Manter o comportamento original para outros campos
-      const { value } = e.target;
-      setFormData({
-        ...formData,
+      if (name === "familiasPAIF") {
+        console.log("Familias PAIF antes de atualizar:", formData.familiasPAIF);
+      }
+
+      setFormData((prevData) => ({
+        ...prevData,
         [name]: name === "mes" ? mesesTraducao[value] || value : value,
-      });
+      }));
+
+      if (name === "familiasPAIF") {
+        console.log("Familias PAIF após atualização:", value);
+      }
     }
   };
 
@@ -272,9 +298,6 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
     }
     if (!formData.cpf) {
       errors.cpf = "O campo 'CPF' é obrigatório.";
-    }
-    if (!formData.endereco) {
-      errors.endereco = "O campo 'Endereço' é obrigatório.";
     }
     if (!formData.telefone) {
       errors.telefone = "O campo 'Telefone' é obrigatório.";
@@ -341,42 +364,6 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
     fetchCategorias();
   }, []);
 
-  const searchStyles = {
-    inputContainer: {
-      position: "relative",
-      marginBottom: "1rem",
-    },
-    beneficiarioList: {
-      position: "absolute",
-      top: "100%",
-      left: 0,
-      right: 0,
-      maxHeight: "200px",
-      overflowY: "auto",
-      backgroundColor: "white",
-      border: "1px solid #ddd",
-      borderRadius: "4px",
-      zIndex: 1000,
-      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-    },
-    beneficiarioItem: {
-      padding: "8px 12px",
-      cursor: "pointer",
-      borderBottom: "1px solid #eee",
-    },
-    beneficiarioInfo: {
-      display: "flex",
-      flexDirection: "column",
-    },
-    beneficiarioName: {
-      fontWeight: "bold",
-    },
-    beneficiarioDetails: {
-      fontSize: "0.9em",
-      color: "#666",
-    },
-  };
-
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
@@ -434,16 +421,6 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
                     {formErrors.cpf}
                   </Form.Text>
                 )}
-              </Form.Group>
-              <Form.Group controlId="formEndereco">
-                <Form.Label>Endereço *</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="endereco"
-                  value={formData.endereco}
-                  onChange={handleChange}
-                  required
-                />
                 {formErrors.endereco && (
                   <Form.Text className="text-danger">
                     {formErrors.endereco}
@@ -466,19 +443,32 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
                 )}
                 <Form.Group controlId="formCategoria">
                   <Form.Label>Categoria</Form.Label>
-                  <Form.Control
-                    as="select"
-                    name="categoriaId"
-                    value={formData.categoriaId || ""}
-                    onChange={handleChange}
+                  <div
+                    className="checkbox-container"
+                    style={{
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                      border: "1px solid #ced4da",
+                      borderRadius: "4px",
+                      padding: "10px",
+                    }}
                   >
-                    <option value="">Selecione uma categoria</option>
                     {categorias.map((categoria) => (
-                      <option key={categoria.id} value={categoria.id}>
-                        {categoria.nome}
-                      </option>
+                      <div key={categoria.id} className="mb-2">
+                        <Form.Check
+                          type="checkbox"
+                          id={`categoria-${categoria.id}`}
+                          label={categoria.nome}
+                          name="categoriaId"
+                          value={categoria.id}
+                          checked={formData.categoriaId?.includes(
+                            String(categoria.id)
+                          )} // Convertemos para string para garantir
+                          onChange={handleChange}
+                        />
+                      </div>
                     ))}
-                  </Form.Control>
+                  </div>
                 </Form.Group>
               </Form.Group>
             </Form>

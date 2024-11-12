@@ -73,7 +73,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler imple
         public ResponseEntity<Object> handleDataIntegrityViolationException(
                         DataIntegrityViolationException dataIntegrityViolationException,
                         WebRequest request) {
-                String errorMessage = dataIntegrityViolationException.getMostSpecificCause().getMessage();
+                String errorMessage = "Erro ao processar a solicitação.";
+                Throwable rootCause = dataIntegrityViolationException.getRootCause();
+
+                // Verifica se a causa raiz é uma ConstraintViolationException e contém o nome
+                // da constraint de unicidade do username
+                if (rootCause instanceof org.hibernate.exception.ConstraintViolationException &&
+                                rootCause.getMessage().contains("unique_username")) { // Ajuste "unique_username"
+                                                                                      // conforme o nome da constraint
+                        errorMessage = "O nome de usuário já existe. Por favor, escolha outro.";
+                }
+
                 log.error("Failed to save entity with integrity problems: " + errorMessage,
                                 dataIntegrityViolationException);
                 return buildErrorResponse(

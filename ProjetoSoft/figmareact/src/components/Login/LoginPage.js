@@ -55,13 +55,10 @@ const LoginPage = () => {
         navigate("/menuassistente", { replace: true });
       } else if (userResponse.data.profile.includes("SECRETARIA")) {
         navigate("/menusecretaria", { replace: true });
-      }
-      // Redireciona os novos perfis (GERENTE e ANALISTA) para o menu da secretaria durante os testes
-      else if (
-        userResponse.data.profile.includes("GERENTE") ||
-        userResponse.data.profile.includes("ANALISTA")
-      ) {
+      } else if (userResponse.data.profile.includes("OUTROS")) {
         navigate("/menuoutros", { replace: true });
+      } else if (userResponse.data.profile.includes("ASSISTENTE")) {
+        navigate("/assistente", { replace: true });
       }
     } catch (err) {
       console.log(err);

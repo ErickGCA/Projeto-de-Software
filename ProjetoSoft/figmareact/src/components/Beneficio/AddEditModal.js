@@ -107,14 +107,14 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
       <Modal.Body>
         <Form>
           <Form.Group>
-            <Form.Label>Nome da Categoria</Form.Label>
+            <Form.Label>Nome do Beneficio</Form.Label>
             <div style={{ position: "relative" }}>
               <Form.Control
                 type="text"
                 name="nome"
                 value={categoria.nome || ""}
                 onChange={handleCategoryChange}
-                placeholder="Digite ou selecione o nome da categoria"
+                placeholder="Digite ou selecione o nome do beneficio"
                 list="categoria-suggestions"
               />
               <datalist id="categoria-suggestions">
@@ -127,7 +127,6 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
             </div>
           </Form.Group>
 
-          {/* Botão para mostrar/ocultar a lista de categorias */}
           <Button
             variant="link"
             onClick={() => setShowCategoriesList((prev) => !prev)}
@@ -141,11 +140,10 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
             }}
           >
             {showCategoriesList
-              ? "Ocultar Lista de Categorias"
-              : "Lista de Categorias"}
+              ? "Ocultar Lista de Beneficios"
+              : "Lista de Beneficios"}
           </Button>
 
-          {/* Exibe a lista de categorias em uma tabela estilizada */}
           {showCategoriesList && (
             <div style={{ marginTop: "10px", overflowX: "auto" }}>
               <table
@@ -154,7 +152,7 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
               >
                 <thead>
                   <tr style={{ backgroundColor: "#f8f9fa" }}>
-                    <th>Categoria</th>
+                    <th>Beneficio</th>
                     <th>Ações</th>
                   </tr>
                 </thead>
@@ -188,7 +186,7 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
               onChange={(e) =>
                 setCategoria((prev) => ({ ...prev, descricao: e.target.value }))
               }
-              placeholder="Digite a descrição da categoria"
+              placeholder="Digite a descrição do beneficio"
             />
           </Form.Group>
         </Form>

@@ -46,25 +46,23 @@ function GerenciarBeneficiado() {
             </p>
             <ol>
               <li>
-                <b>CRIAR BENEFICIARIO:</b> Na aba de criar beneficiario, mais
-                especificamente no "Informações Adicionais", todos os campos são
-                obrigatórios, com excessão da categoria Para a lista de
-                categorias aparecer, você deverá criar o beneficio antes, em
-                Beneficios -D "Gerenciar Beneficios". Os demais blocos (l, ll,
-                lll), são referentes ao RMA, nenhuma das opções são
-                obrigatórias.
+                <b>Criar:</b> Na aba de criar beneficiario, mais especificamente
+                no "Informações Adicionais", todos os campos são obrigatórios,
+                com excessão da categoria Para a lista de categorias aparecer,
+                você deverá criar o beneficio antes, em Beneficios -D "Gerenciar
+                Beneficios". Os demais blocos (l, ll, lll), são referentes ao
+                RMA, nenhuma das opções são obrigatórias.
               </li>
               <li>
                 <b>Editar e Excluir:</b> Altere as informações necessárias do
                 beneficiado, garantindo que todos os dados estejam atualizados.
-                Por questões de segurança, não é possivel editar o RMA e nem
-                exclui-lo, PORTANTO, cuidado
+                Para editar as informações sobre o RMA o usuário deve escolher o
+                mês que deseja e atualizar as informações. NÃO DEIXE DE ESCOLHER
+                O MêS!
               </li>
               <li>
-                <b>
-                  Nos campos ver detalhes é possivel ver os detalhes do RMA
-                  associado a determinado beneficiario e os Filiados
-                </b>
+                <b>Nos campos VER DETALHES</b> é possivel ver os detalhes do RMA
+                associado a determinado beneficiario e os Filiados.
               </li>
             </ol>
             <button

@@ -1,9 +1,16 @@
 import React from "react";
-import { MdArrowBack } from "react-icons/md"; // Ícone de seta
-import logoImage from "../images/logo (1).png"; // Ajuste o caminho conforme sua estrutura
+import { MdArrowBack } from "react-icons/md";
+import { useNavigate } from "react-router-dom"; // Importa o hook useNavigate
+import logoImage from "../images/logo (1).png";
 import styles from "./GerenciarUsuario.module.css";
 
-function Sidebar({ onHelpClick, onBackClick }) {
+function Sidebar({ onHelpClick }) {
+  const navigate = useNavigate(); // Inicializa o hook
+
+  const handleBackClick = () => {
+    navigate(-1); // Volta para a página anterior
+  };
+
   return (
     <aside className={styles.sidebarContainer}>
       <img
@@ -15,14 +22,16 @@ function Sidebar({ onHelpClick, onBackClick }) {
       <h1 className={styles.sidebarTitle}>Secretaria de Assistência Social</h1>
       <h2 className={styles.formTitle}>Gerenciar Usuário</h2>
 
-      {/* Botão de Voltar */}
-      <button type="button" className={styles.backButton} onClick={onBackClick}>
-        <MdArrowBack /> {/* Ícone de seta para voltar */}
+      <button
+        type="button"
+        className={styles.backButton}
+        onClick={handleBackClick}
+      >
+        <MdArrowBack />
       </button>
 
-      {/* Botão de ajuda */}
       <button type="button" className={styles.helpButton} onClick={onHelpClick}>
-        ? {/* Ponto de interrogação */}
+        ?
       </button>
     </aside>
   );

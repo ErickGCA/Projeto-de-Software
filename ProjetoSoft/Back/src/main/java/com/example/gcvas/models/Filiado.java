@@ -31,7 +31,7 @@ public class Filiado {
     @Column(name = "CodF", nullable = false, unique = true, length = 10)
     private Long id;
 
-    @Column(name = "username", unique = true, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "username", nullable = true, insertable = true, updatable = true, length = 50)
     @NotBlank
     @Size(min = 2, max = 50)
     private String username;

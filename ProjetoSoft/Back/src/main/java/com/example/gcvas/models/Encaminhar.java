@@ -48,7 +48,7 @@ public class Encaminhar {
 
     // Se você também quiser relacionar com Beneficiario, adicione:
     @ManyToOne
-    @JoinColumn(name = "id", unique = false, nullable = false, insertable = true, updatable = false)
+    @JoinColumn(name = "id", unique = false, nullable = false, updatable = false)
     private Beneficiario beneficiario;
 
 }
