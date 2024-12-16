@@ -29,9 +29,9 @@ public class UserService {
 
     public List<User> findAll(Boolean activeOnly) {
         if (activeOnly != null) {
-            return userRepository.findByActive(activeOnly);
+            return userRepository.findByActiveAndProfileNot(activeOnly, TipoUser.ADM);
         }
-        return userRepository.findAll();
+        return userRepository.findByProfileNot(TipoUser.ADM);
     }
 
     public User findById(Long id) {
@@ -57,6 +57,7 @@ public class UserService {
     @Transactional
     public User update(User newObj) {
         User obj = this.findById(newObj.getId());
+        obj.setUsername(newObj.getUsername());
         obj.setPassword(this.bCryptPasswordEncoder.encode(newObj.getPassword()));
         obj.setProfile(newObj.getProfile());
         // Mantém o status active inalterado durante atualizações normais

@@ -99,11 +99,11 @@
 .formTitle {
   position: relative;
   top: -200px;
-  left: 260%;
+  left: 220%;
 
   color: #4f9122;
   text-align: center;
-  font: 600 40px Inter, sans-serif;
+  font: 700 33px Inter, sans-serif;
 }
 
 .menuContainer {

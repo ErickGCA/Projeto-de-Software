@@ -7,4 +7,5 @@ import com.example.gcvas.models.Categoria;
 
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
+
 }

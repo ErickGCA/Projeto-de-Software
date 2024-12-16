@@ -1,14 +1,19 @@
 // Modals.js
 import React, { useEffect, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 // AddModal Component
 export function AddModal({ show, handleClose, handleSave }) {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
+    confirmPassword: "",
+
     profile: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,10 +24,16 @@ export function AddModal({ show, handleClose, handleSave }) {
   };
 
   const onSave = () => {
-    // Converter 'profile' para número antes de enviar
+    if (formData.password !== formData.confirmPassword) {
+      alert("As senhas não coincidem!");
+      return;
+    }
+
     const userData = {
       username: formData.username,
       password: formData.password,
+      confirmPassword: formData.password,
+
       profile: Number(formData.profile),
     };
 
@@ -30,6 +41,7 @@ export function AddModal({ show, handleClose, handleSave }) {
     setFormData({
       username: "",
       password: "",
+      confirmPassword: "",
       profile: "",
     });
   };
@@ -49,17 +61,61 @@ export function AddModal({ show, handleClose, handleSave }) {
               name="username"
               value={formData.username}
               onChange={handleChange}
+              style={{
+                width: "91.5%",
+              }}
             />
           </Form.Group>
           <Form.Group controlId="formPassword">
             <Form.Label>Senha *</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Senha"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-            />
+            <div className="d-flex align-items-center">
+              <Form.Control
+                type={showPassword ? "text" : "password"}
+                placeholder="Senha"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              <Button
+                variant="outline-secondary"
+                onClick={() => setShowPassword(!showPassword)}
+                className="ml-2"
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  position: "relative",
+                  bottom: "10px",
+                }}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </Button>
+            </div>
+          </Form.Group>
+
+          <Form.Group controlId="formConfirmPassword">
+            <Form.Label>Confirmar Senha *</Form.Label>
+            <div className="d-flex align-items-center">
+              <Form.Control
+                type={showPassword ? "text" : "password"}
+                placeholder="Confirmar Senha"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+              <Button
+                variant="outline-secondary"
+                onClick={() => setShowPassword(!showPassword)}
+                className="ml-2"
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  position: "relative",
+                  bottom: "10px",
+                }}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </Button>
+            </div>
           </Form.Group>
           <Form.Group controlId="formProfile">
             <Form.Label>Perfil *</Form.Label>
@@ -68,6 +124,9 @@ export function AddModal({ show, handleClose, handleSave }) {
               name="profile"
               value={formData.profile}
               onChange={handleChange}
+              style={{
+                width: "30%",
+              }}
             >
               <option value="">Selecione</option>
               <option value="0">ADM</option>
@@ -96,14 +155,19 @@ export function EditModal({ show, handleClose, selectedItem, handleSave }) {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
+    confirmPassword: "",
+
     profile: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (selectedItem) {
       setFormData({
         username: selectedItem.username || "",
         password: selectedItem.password || "",
+        confirmPassword: selectedItem.confirmPassword || "",
         profile: selectedItem.profile !== undefined ? selectedItem.profile : "",
       });
     }
@@ -135,15 +199,6 @@ export function EditModal({ show, handleClose, selectedItem, handleSave }) {
       </Modal.Header>
       <Modal.Body>
         <Form>
-          <Form.Group controlId="formId">
-            <Form.Label>ID</Form.Label>
-            <Form.Control
-              type="number"
-              name="id"
-              value={selectedItem?.id || ""}
-              readOnly
-            />
-          </Form.Group>
           <Form.Group controlId="formUsername">
             <Form.Label>Username</Form.Label>
             <Form.Control
@@ -155,14 +210,55 @@ export function EditModal({ show, handleClose, selectedItem, handleSave }) {
             />
           </Form.Group>
           <Form.Group controlId="formPassword">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-            />
+            <Form.Label>Senha *</Form.Label>
+            <div className="d-flex align-items-center">
+              <Form.Control
+                type={showPassword ? "text" : "password"}
+                placeholder="Senha"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              <Button
+                variant="outline-secondary"
+                onClick={() => setShowPassword(!showPassword)}
+                className="ml-2"
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  position: "relative",
+                  bottom: "10px",
+                }}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </Button>
+            </div>
+          </Form.Group>
+
+          <Form.Group controlId="formConfirmPassword">
+            <Form.Label>Confirmar Senha *</Form.Label>
+            <div className="d-flex align-items-center">
+              <Form.Control
+                type={showPassword ? "text" : "password"}
+                placeholder="Confirmar Senha"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+              <Button
+                variant="outline-secondary"
+                onClick={() => setShowPassword(!showPassword)}
+                className="ml-2"
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  position: "relative",
+                  bottom: "10px",
+                }}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </Button>
+            </div>
           </Form.Group>
           <Form.Group controlId="formProfile">
             <Form.Label>Profile</Form.Label>
@@ -171,11 +267,14 @@ export function EditModal({ show, handleClose, selectedItem, handleSave }) {
               name="profile"
               value={formData.profile}
               onChange={handleChange}
+              style={{
+                width: "30%",
+              }}
             >
               <option value="">Selecione</option>
               <option value="0">ADM</option>
               <option value="1">SECRETARIA</option>
-              <option value="2">GERENTE</option>
+              <option value="2">OUTROS</option>
               <option value="3">ASSISTENTE</option>
             </Form.Control>
           </Form.Group>

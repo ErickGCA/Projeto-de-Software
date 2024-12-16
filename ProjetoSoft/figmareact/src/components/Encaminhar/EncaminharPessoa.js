@@ -7,8 +7,13 @@ import FormInput from "./FormInput";
 
 const formInputs = [
   { label: "Nome * ", icon: <MdPerson />, width: 412, id: "username" },
-  { label: "Telefone *", icon: <MdPhone />, width: 217, id: "telefone" },
-
+  { label: "Telefone ", icon: <MdPhone />, width: 217, id: "telefone" },
+  { label: "Data *", icon: null, width: 217, id: "data", type: "date" },
+  {
+    label: "Horário da Consulta *",
+    id: "horarioConsulta",
+    type: "time",
+  },
   { label: "Setor *", icon: <MdWork />, width: 217, id: "setor" },
 ];
 
@@ -17,11 +22,11 @@ function EncaminharPessoa() {
     username: "",
     beneficiarioId: "",
     beneficiarioNome: "",
-    cpf: "",
     telefone: "",
     endereco: "",
     data: "",
     setor: "",
+    horarioConsulta: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -103,13 +108,18 @@ function EncaminharPessoa() {
 
     const payload = {
       username: formData.username,
-      cpf: formData.cpf,
       telefone: formData.telefone,
       endereco: formData.endereco,
-      data: formData.data,
+      data: formData.data, // Formato ISO é enviado diretamente pelo input de tipo date
       setor: formData.setor,
       beneficiario: { id: formData.beneficiarioId },
+      hora: formData.horarioConsulta,
     };
+
+    if (formData.beneficiarioId) {
+      payload.beneficiario = { id: formData.beneficiarioId };
+    }
+    console.log("Payload enviado:", payload);
 
     try {
       await api.post("/encaminhar", payload);
@@ -118,11 +128,11 @@ function EncaminharPessoa() {
         username: "",
         beneficiarioId: "",
         beneficiarioNome: "",
-        cpf: "",
         telefone: "",
         endereco: "",
         data: "",
         setor: "",
+        horarioConsulta: "",
       });
       setSearchTerm("");
     } catch (err) {
@@ -134,9 +144,6 @@ function EncaminharPessoa() {
       setLoading(false);
     }
   };
-
-  const formatCPF = (cpf) =>
-    cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
 
   return (
     <div className={styles.container}>
@@ -185,7 +192,6 @@ function EncaminharPessoa() {
                             {beneficiario.username}
                           </span>
                           <span className={styles.beneficiarioDetails}>
-                            CPF: {formatCPF(beneficiario.cpf)} | NIS:{" "}
                             {beneficiario.nis}
                           </span>
                         </div>
@@ -216,7 +222,7 @@ function EncaminharPessoa() {
             {error && <div className={styles.errorMessage}>{error}</div>}
             {success && (
               <div className={styles.successMessage}>
-                Dados enviados com sucesso!
+                O encaminhamento foi realizado com sucesso!
               </div>
             )}
             <button

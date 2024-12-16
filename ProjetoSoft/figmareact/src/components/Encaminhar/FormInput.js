@@ -22,7 +22,7 @@ const FormInput = ({
             value={value}
             onChange={onChange}
             className={styles.inputField}
-            required
+            required={label.includes("*")}
           >
             <option value="">{placeholder}</option>
             {options.map((option, index) => (
@@ -39,7 +39,7 @@ const FormInput = ({
             onChange={onChange}
             className={styles.inputField}
             placeholder={placeholder}
-            required
+            required={label.includes("*")}
           />
         )}
       </div>

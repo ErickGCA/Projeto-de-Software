@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Button, Modal, Table } from "react-bootstrap";
+import { Button, Modal, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 import styles from "./BeneficiosAssistente.module.css";
 
 function HistoricoTable({ data, onEdit, onDelete }) {
@@ -18,52 +18,22 @@ function HistoricoTable({ data, onEdit, onDelete }) {
       setLoading(true);
       setError(null);
 
-      const fetchPromises = data.map(async (categoria) => {
-        try {
-          const response = await axios.get(
-            `/Beneficiario/categoria/${categoria.id}`,
-            {
-              signal: controller.signal,
-              withCredentials: true,
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
-            }
-          );
-
-          if (isMounted) {
-            return { id: categoria.id, beneficiarios: response.data };
-          }
-        } catch (error) {
-          if (axios.isCancel(error)) {
-            return null;
-          }
-
-          if (error.response?.status === 403) {
-            window.location.href = "/login";
-            return null;
-          }
-
-          if (isMounted) {
-            console.error(
-              `Error fetching beneficiarios for categoria ${categoria.id}:`,
-              error
-            );
-            return { id: categoria.id, error: true };
-          }
-        }
-      });
-
       try {
-        const results = await Promise.all(fetchPromises);
-        if (isMounted) {
-          const newBeneficiariosMap = results.reduce((acc, result) => {
-            if (result && !result.error) {
-              acc[result.id] = result.beneficiarios;
-            }
-            return acc;
-          }, {});
+        const responses = await Promise.all(
+          data.map((categoria) =>
+            axios.get(`/categorias/${categoria.id}`, {
+              withCredentials: true,
+            })
+          )
+        );
 
+        const newBeneficiariosMap = responses.reduce((acc, response) => {
+          const { id, beneficiarios } = response.data;
+          acc[id] = beneficiarios;
+          return acc;
+        }, {});
+
+        if (isMounted) {
           setBeneficiariosMap(newBeneficiariosMap);
         }
       } catch (error) {
@@ -71,6 +41,7 @@ function HistoricoTable({ data, onEdit, onDelete }) {
           setError(
             "Erro ao carregar beneficiários. Por favor, tente novamente."
           );
+          console.error(error);
         }
       } finally {
         if (isMounted) {
@@ -89,15 +60,42 @@ function HistoricoTable({ data, onEdit, onDelete }) {
     };
   }, [data]);
 
-  const handleShowDetails = (categoria) => {
-    setSelectedCategoria(categoria);
-    setShowModal(true);
+  const handleShowDetails = async (categoria) => {
+    try {
+      const response = await axios.get(`/categorias/${categoria.id}`, {
+        withCredentials: true,
+      });
+
+      setBeneficiariosMap((prev) => ({
+        ...prev,
+        [categoria.id]: response.data.beneficiarios,
+      }));
+
+      setSelectedCategoria(categoria);
+      setShowModal(true);
+    } catch (error) {
+      console.error(
+        `Error fetching beneficiarios for categoria ${categoria.id}:`,
+        error
+      );
+      alert("Erro ao carregar beneficiários");
+    }
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedCategoria(null);
   };
+
+  // Função para formatar o CPF com pontuação
+  const formatCPF = (cpf) => {
+    if (!cpf) return "";
+    const numbers = cpf.replace(/\D/g, "");
+    return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+  };
+
+  // Função para exibir o Tooltip
+  const renderTooltip = (text) => <Tooltip id="tooltip">{text}</Tooltip>;
 
   const renderBeneficiariosTable = () => {
     const beneficiarios = beneficiariosMap[selectedCategoria.id];
@@ -109,15 +107,32 @@ function HistoricoTable({ data, onEdit, onDelete }) {
       <Table striped bordered hover>
         <thead>
           <tr>
-            <th>ID</th>
+            <th>CPF</th>
             <th>Nome</th>
           </tr>
         </thead>
         <tbody>
           {beneficiarios.map((beneficiario) => (
             <tr key={beneficiario.id}>
-              <td>{beneficiario.id}</td>
-              <td>{beneficiario.username}</td>
+              <td>{formatCPF(beneficiario.cpf)}</td>
+              <td>
+                <OverlayTrigger
+                  placement="top"
+                  overlay={renderTooltip(beneficiario.username)}
+                >
+                  <span
+                    style={{
+                      whiteSpace: "nowrap",
+                      textOverflow: "ellipsis",
+                      overflow: "hidden",
+                      display: "inline-block",
+                      maxWidth: "150px", // Ajuste o maxWidth conforme necessário
+                    }}
+                  >
+                    {beneficiario.username}
+                  </span>
+                </OverlayTrigger>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -125,27 +140,27 @@ function HistoricoTable({ data, onEdit, onDelete }) {
     );
   };
 
-  if (error) {
-    return (
-      <div className={styles.errorContainer}>
-        <span>{error}</span>
-        <Button
-          className={styles.retryButton}
-          onClick={() => window.location.reload()}
-        >
-          Tentar Novamente
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <>
       <table className={styles.historicoTable}>
         <thead>
           <tr>
-            <th>Beneficio</th>
-            <th>Descrição</th>
+            <th>
+              <OverlayTrigger
+                placement="top"
+                overlay={renderTooltip("Benefício")}
+              >
+                <span>Benefício</span>
+              </OverlayTrigger>
+            </th>
+            <th>
+              <OverlayTrigger
+                placement="top"
+                overlay={renderTooltip("Descrição")}
+              >
+                <span>Descrição</span>
+              </OverlayTrigger>
+            </th>
             <th>Beneficiários</th>
             <th>Ações</th>
           </tr>
@@ -153,8 +168,42 @@ function HistoricoTable({ data, onEdit, onDelete }) {
         <tbody>
           {data.map((item) => (
             <tr key={item.id}>
-              <td>{item.nome}</td>
-              <td>{item.descricao}</td>
+              <td>
+                <OverlayTrigger
+                  placement="top"
+                  overlay={renderTooltip(item.nome)}
+                >
+                  <span
+                    style={{
+                      whiteSpace: "nowrap",
+                      textOverflow: "ellipsis",
+                      overflow: "hidden",
+                      display: "inline-block",
+                      maxWidth: "150px", // Ajuste conforme necessário
+                    }}
+                  >
+                    {item.nome}
+                  </span>
+                </OverlayTrigger>
+              </td>
+              <td>
+                <OverlayTrigger
+                  placement="top"
+                  overlay={renderTooltip(item.descricao)}
+                >
+                  <span
+                    style={{
+                      whiteSpace: "nowrap",
+                      textOverflow: "ellipsis",
+                      overflow: "hidden",
+                      display: "inline-block",
+                      maxWidth: "150px", // Ajuste conforme necessário
+                    }}
+                  >
+                    {item.descricao}
+                  </span>
+                </OverlayTrigger>
+              </td>
               <td className={styles.beneficiariosCell}>
                 <Button
                   className={styles.detailsButton}
@@ -182,7 +231,6 @@ function HistoricoTable({ data, onEdit, onDelete }) {
         </tbody>
       </table>
 
-      {/* Modal para exibir beneficiários */}
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>Beneficiários - {selectedCategoria?.nome}</Modal.Title>

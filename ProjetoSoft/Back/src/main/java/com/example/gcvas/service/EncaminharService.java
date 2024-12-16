@@ -45,29 +45,39 @@ public class EncaminharService {
         obj.setId(null); // Certificando-se de que o ID é null para um novo objeto
         logger.info("Criando novo encaminhamento: {}", obj);
 
-        // Buscar o beneficiário pelo NIS (ID)
-        Optional<Beneficiario> optionalBeneficiario = beneficiarioRepository.findById(obj.getBeneficiario().getId());
-        if (optionalBeneficiario.isPresent()) {
-            Beneficiario beneficiario = optionalBeneficiario.get();
-            obj.setBeneficiario(beneficiario); // Atualiza o objeto com o beneficiário encontrado
-
-            // Salva o objeto
-            Encaminhar savedEncaminhar = this.encaminharRepository.save(obj);
-
-            // Incrementar o ResumoMensal com base no mês atual
-            String mesAtual = LocalDate.now().getMonth().toString(); // Utilizando o mês atual
-            ResumoMensal resumoMensal = resumoMensalService.createOrGetResumo(mesAtual);
-
-            // Incrementando ResumoMensal com dados do beneficiário
-            resumoMensalService.incrementarResumo(resumoMensal, beneficiario);
-            resumoMensal.incrementarTotalEncaminhamentos(); // Nova linha adicionada
-            resumoMensalService.updateResumoMensal(resumoMensal); // Atualiza o ResumoMensal no banco
-
-            return savedEncaminhar;
+        // Verifica se o beneficiário está presente e válido
+        if (obj.getBeneficiario() != null && obj.getBeneficiario().getId() != null) {
+            // Buscar o beneficiário pelo NIS (ID)
+            Optional<Beneficiario> optionalBeneficiario = beneficiarioRepository
+                    .findById(obj.getBeneficiario().getId());
+            if (optionalBeneficiario.isPresent()) {
+                Beneficiario beneficiario = optionalBeneficiario.get();
+                obj.setBeneficiario(beneficiario); // Atualiza o objeto com o beneficiário encontrado
+            } else {
+                logger.warn("Beneficiário não encontrado com o ID: {}", obj.getBeneficiario().getId());
+                // Não lançar exceção: permite continuar com o beneficiário como null
+                obj.setBeneficiario(null);
+            }
         } else {
-            logger.error("Beneficiário não encontrado com o ID: {}", obj.getBeneficiario().getId());
-            throw new RuntimeException("Beneficiário não encontrado com o ID: " + obj.getBeneficiario().getId());
+            logger.info("Nenhum beneficiário informado. Continuando sem associar um beneficiário.");
+            obj.setBeneficiario(null); // Explicitamente define como null para consistência
         }
+
+        // Salva o objeto
+        Encaminhar savedEncaminhar = this.encaminharRepository.save(obj);
+
+        // Incrementar ResumoMensal apenas se necessário (pode ser condicional)
+        String mesAtual = LocalDate.now().getMonth().toString(); // Utilizando o mês atual
+        ResumoMensal resumoMensal = resumoMensalService.createOrGetResumo(mesAtual);
+
+        if (obj.getBeneficiario() != null) {
+            // Incrementando ResumoMensal com dados do beneficiário, se houver
+            resumoMensalService.incrementarResumo(resumoMensal, obj.getBeneficiario());
+        }
+        resumoMensal.incrementarTotalEncaminhamentos(); // Incrementa o total de encaminhamentos
+        resumoMensalService.updateResumoMensal(resumoMensal); // Atualiza o ResumoMensal no banco
+
+        return savedEncaminhar;
     }
 
     @Transactional

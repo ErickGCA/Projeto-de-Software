@@ -133,7 +133,10 @@ const HistoricoList = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div
+      className="container mx-auto p-4"
+      style={{ margin: "0px 100px 100px 100px" }}
+    >
       <div className={styles.mes}>
         <select
           value={mesAtual}

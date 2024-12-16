@@ -18,7 +18,7 @@ function Sidebar({ toggleHelp }) {
         className={styles.logo}
       />
       <h1 className={styles.sidebarTitle}>Secretaria de Assistência Social</h1>
-      <h2 className={styles.formTitle}>Histórico de Ações</h2>
+      <h2 className={styles.formTitle}>Encaminhamentos e Agendamentos</h2>
 
       {/* Botão de voltar */}
       <button className={styles.backButton} onClick={handleBack}>

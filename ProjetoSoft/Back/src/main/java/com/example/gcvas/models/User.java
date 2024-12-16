@@ -31,7 +31,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "login", unique = true, nullable = false, updatable = false, length = 30)
+    @Column(name = "login", unique = true, nullable = false, updatable = true, length = 30)
     @NotBlank
     @Size(min = 5, max = 30)
     private String username;

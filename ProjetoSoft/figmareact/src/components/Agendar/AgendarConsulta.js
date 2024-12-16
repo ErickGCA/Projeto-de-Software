@@ -20,7 +20,7 @@ const camposFormulario = [
   },
 
   {
-    label: "Telefone *",
+    label: "Telefone",
     icon: <MdPhone />,
     id: "telefone",
   },
@@ -74,6 +74,16 @@ function AgendarConsulta() {
     setLoading(true);
     setError(null);
     setSuccess(false);
+
+    // Validação: verificar se a data da consulta já passou
+    const today = new Date();
+    const selectedDate = new Date(formData.dataConsulta);
+
+    if (selectedDate < today.setHours(0, 0, 0, 0)) {
+      setLoading(false);
+      setError("A data da consulta não pode ser uma data que já passou.");
+      return;
+    }
 
     const payload = {
       username: formData.nome,
@@ -144,7 +154,7 @@ function AgendarConsulta() {
             {error && <div className={styles.errorMessage}>{error}</div>}
             {success && (
               <div className={styles.successMessage}>
-                Dados enviados com sucesso!
+                O agendamento foi realizado com sucesso!
               </div>
             )}
             <button

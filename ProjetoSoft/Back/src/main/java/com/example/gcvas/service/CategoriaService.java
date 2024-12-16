@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 import com.example.gcvas.models.Categoria;
 import com.example.gcvas.repositories.CategoriaRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
+
 public class CategoriaService {
 
     @Autowired
@@ -29,9 +32,23 @@ public class CategoriaService {
         return categoriaRepository.save(categoria);
     }
 
-    public Categoria update(Categoria categoria) {
-        findById(categoria.getId()); // Verifica se existe
-        return categoriaRepository.save(categoria);
+    @Transactional
+    public void update(Categoria categoria) {
+        Categoria existingCategoria = categoriaRepository.findById(categoria.getId())
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+
+        // Atualizar campos simples
+        existingCategoria.setNome(categoria.getNome());
+        existingCategoria.setDescricao(categoria.getDescricao());
+
+        // Atualizar beneficiários
+        if (categoria.getBeneficiarios() != null) {
+            existingCategoria.getBeneficiarios().clear(); // Limpa os beneficiários antigos
+            existingCategoria.getBeneficiarios().addAll(categoria.getBeneficiarios()); // Adiciona os novos
+        }
+
+        // Salvar alterações
+        categoriaRepository.save(existingCategoria);
     }
 
     public void delete(Long id) {

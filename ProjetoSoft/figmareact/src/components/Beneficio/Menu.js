@@ -84,12 +84,34 @@ function HistoricoList() {
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
+  const processBeneficiarios = (beneficiarios) => {
+    if (!Array.isArray(beneficiarios)) {
+      console.error("Beneficiários inválidos:", beneficiarios);
+      return [];
+    }
+    return beneficiarios.map((beneficiario) => ({ id: beneficiario.id }));
+  };
+
   const handleSave = async (item) => {
     try {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+
+      // Processa os beneficiários antes de enviar para a API
+      const processedBeneficiarios = processBeneficiarios(item.beneficiarios);
+
+      const dataToSend = {
+        ...item,
+        beneficiarios: processedBeneficiarios,
+      };
+
       if (item.id) {
-        await api.put(`/categorias/${item.id}`, item);
+        // Para PUT
+        await api.put(`/categorias/${item.id}`, dataToSend, { headers });
       } else {
-        await api.post("/categorias", item);
+        // Para POST
+        await api.post("/categorias", dataToSend, { headers });
       }
 
       const data = await getCategorias();
@@ -97,7 +119,7 @@ function HistoricoList() {
       handleCloseAddModal();
       handleCloseEditModal();
     } catch (error) {
-      console.error("Erro ao salvar categoria:", error);
+      console.error("Erro ao salvar Benefício:", error);
       alert("Houve um erro ao salvar os dados. Por favor, tente novamente.");
     }
   };
@@ -107,7 +129,7 @@ function HistoricoList() {
       <div className={styles.searchContainer}>
         <input
           type="text"
-          placeholder="Pesquisar beneficio..."
+          placeholder="Pesquisar benefícios..."
           value={searchTerm}
           onChange={handleSearch}
           className={styles.searchInput}
@@ -132,7 +154,9 @@ function HistoricoList() {
       <AddEditModal
         show={showAddModal || showEditModal}
         handleClose={showAddModal ? handleCloseAddModal : handleCloseEditModal}
-        title={showAddModal ? "Adicionar Categoria" : "Editar Categoria"}
+        title={
+          showAddModal ? "Adicionar Benefícios" : "Editar Benefício e Categoria"
+        }
         item={selectedItem}
         onSave={handleSave}
       />

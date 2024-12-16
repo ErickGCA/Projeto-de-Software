@@ -25,7 +25,7 @@ function HistoricoList() {
           ...item,
           categoria: "Agendamento",
           dataConsulta: item.dataconsu,
-          horarioConsulta: item.horarioConsulta, // Verifique o nome correto
+          horarioConsulta: item.horarioConsulta,
         }));
 
         console.log("Agendamentos:", agendamentos);
@@ -35,8 +35,9 @@ function HistoricoList() {
         const encaminhamentos = encaminharResponse.data.map((item) => ({
           ...item,
           categoria: "Encaminhamento",
-
-          horarioConsulta: item.horario, // Mapeia 'horario' para 'horarioConsulta'
+          nome: item.username, // Use username como nome para encaminhamentos
+          dataConsulta: item.data, // Use a data do encaminhamento
+          horarioConsulta: item.horario, // Use horário se existir
         }));
 
         console.log("Encaminhamentos:", encaminhamentos);
@@ -135,7 +136,6 @@ function HistoricoList() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className={styles.searchInput}
         />
-        {/* Removido o botão 'Criar' */}
       </div>
 
       <div className={styles.historicoTableContainer}>

@@ -43,8 +43,9 @@ function HistoricoList() {
       await api.post("/user", user);
       await fetchHistoricoData();
       setShowAddModal(false);
+      alert("Usuário criado com sucesso!"); // Exibe o alerta simples
     } catch (error) {
-      alert("Erro ao criar usuário, o usuário deve ser único.");
+      alert("Erro ao criar usuário, o usuário é obrigatório e deve ser único.");
     }
   };
 
@@ -53,8 +54,8 @@ function HistoricoList() {
       await api.put(`/user/${selectedItem.id}`, updatedUser);
       await fetchHistoricoData();
       setShowEditModal(false);
+      alert("Usuário editado com sucesso!"); // Exibe o alerta simples
     } catch (error) {
-      console.error("Erro ao atualizar usuário", error);
       alert("Erro ao atualizar usuário. Tente novamente.");
     }
   };

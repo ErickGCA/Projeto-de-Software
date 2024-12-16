@@ -1,8 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form, Modal, Tab, Tabs } from "react-bootstrap";
 import api from "../../api/api";
+import styles from "./GerenciarBeneficiado.module.css";
 
-function AddEditModal({ show, handleClose, title, item, onSave }) {
+function AddEditModal({
+  show,
+  handleClose,
+  title,
+  item,
+  onSave,
+  onHelpClick,
+  onBackClick,
+}) {
   const [formData, setFormData] = useState({
     id: "",
     username: "",
@@ -52,6 +61,8 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
   const [activeTab, setActiveTab] = useState("basics");
   const [categorias, setCategorias] = useState([]);
   const [formErrors, setFormErrors] = useState({});
+
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (item) {
@@ -214,49 +225,77 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
+    // Lidar com checkboxes e armazenar valores selecionados como array
     if (type === "checkbox") {
-      const currentValues = Array.isArray(formData[name]) ? formData[name] : [];
-      let newValue;
+      console.log("Checkbox alterado");
+      console.log("Nome do campo:", name);
+      console.log("Valor do checkbox:", value);
+      console.log("Checkbox marcado:", checked);
+
+      // Se o valor atual de formData[name] for uma string, converte em array
+      const currentValues = formData[name] ? formData[name].split(",") : [];
+      console.log("Valores atuais antes da atualização:", currentValues);
 
       if (checked) {
-        // Se marcado, usamos apenas o valor atual
-        newValue = value;
+        // Se o checkbox estiver marcado, adiciona o valor ao array
+        currentValues.push(value);
       } else {
-        // Se desmarcado, limpamos o valor
-        newValue = "";
+        // Se o checkbox for desmarcado, remove o valor do array
+        const index = currentValues.indexOf(value);
+        if (index > -1) {
+          currentValues.splice(index, 1);
+        }
       }
+
+      // Converte o array de valores em uma string separada por vírgulas
+      const updatedValue = currentValues.join(",");
+      console.log("Valores atualizados para checkbox:", updatedValue);
 
       setFormData((prevData) => ({
         ...prevData,
-        categoriaId: newValue, // Armazena apenas um valor
-        categoria: {
-          id: newValue, // Atualiza o ID da categoria
-        },
+        [name]: updatedValue, // Armazena como uma string
       }));
-
-      console.log("Valor atualizado:", newValue);
-    } else if (name === "categoriasIds" && e.target.options) {
+    }
+    // Lidar com campos <select> múltiplos
+    else if (name === "categoriasIds" && e.target.options) {
       const selectedValues = Array.from(e.target.options)
         .filter((option) => option.selected)
         .map((option) => option.value);
 
+      // Converte os valores para uma string separada por vírgulas
+      const updatedSelectValue = selectedValues.join(",");
+      console.log("Valores selecionados no select:", selectedValues);
+      console.log("String de valores do select:", updatedSelectValue);
+
       setFormData((prevData) => ({
         ...prevData,
-        [name]: selectedValues,
+        [name]: updatedSelectValue, // Armazena como uma string separada por vírgulas
       }));
-    } else {
-      if (name === "familiasPAIF") {
-        console.log("Familias PAIF antes de atualizar:", formData.familiasPAIF);
+    }
+    // Lidar com campos numéricos (impede valores negativos)
+    else if (type === "number") {
+      const numericValue = Number(value);
+
+      if (numericValue < 0) {
+        alert("Valor não pode ser negativo.");
+        return; // Não atualiza o estado se for negativo
       }
 
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: numericValue, // Atualiza o valor numérico
+      }));
+
+      console.log(`Valor numérico de ${name} atualizado:`, numericValue);
+    }
+    // Para outros campos (texto, etc)
+    else {
       setFormData((prevData) => ({
         ...prevData,
         [name]: name === "mes" ? mesesTraducao[value] || value : value,
       }));
 
-      if (name === "familiasPAIF") {
-        console.log("Familias PAIF após atualização:", value);
-      }
+      console.log(`Valor de ${name} atualizado:`, value);
     }
   };
 
@@ -288,22 +327,57 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
     const numbers = cpf.replace(/\D/g, "");
     return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
   };
+  const isValidCPF = (cpf) => {
+    cpf = cpf.replace(/[^\d]+/g, ""); // Remove caracteres não numéricos
+    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
 
+    let soma = 0,
+      resto;
+
+    // Validação do primeiro dígito verificador
+    for (let i = 1; i <= 9; i++) soma += parseInt(cpf.charAt(i - 1)) * (11 - i);
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.charAt(9))) return false;
+
+    soma = 0;
+
+    // Validação do segundo dígito verificador
+    for (let i = 1; i <= 10; i++)
+      soma += parseInt(cpf.charAt(i - 1)) * (12 - i);
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.charAt(10))) return false;
+
+    return true;
+  };
   const handleSubmit = async () => {
     const errors = {};
 
     // Validação dos campos obrigatórios
     if (!formData.username) {
-      errors.username = "O campo 'Nome' é obrigatório.";
-    }
-    if (!formData.cpf) {
-      errors.cpf = "O campo 'CPF' é obrigatório.";
-    }
-    if (!formData.telefone) {
-      errors.telefone = "O campo 'Telefone' é obrigatório.";
+      alert("Por favor, preencha o campo de nome de usuário.");
+      return;
     }
     if (!formData.nis) {
-      errors.nis = "O campo 'NIS' é obrigatório.";
+      alert("O campo 'NIS' é obrigatório.");
+      return;
+    }
+
+    if (!formData.cpf) {
+      alert("Por favor, preencha o campo de CPF.");
+      return;
+    }
+
+    if (!isValidCPF(formData.cpf)) {
+      alert(
+        "CPF inválido ou já cadastrado. Por favor, insira um número de CPF válido."
+      );
+      return;
+    }
+    if (!formData.telefone) {
+      alert("O campo 'Telefone' é obrigatório.");
+      return;
     }
 
     // Se houver erros, não prosseguir com a submissão
@@ -370,15 +444,153 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Tabs
-          activeKey={activeTab}
-          onSelect={(k) => setActiveTab(k)}
-          className="mb-3"
-        >
-          <Tab eventKey="basics" title="Informações Básicas">
+        <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k)}>
+          <Tab
+            eventKey="basics"
+            title="Informações Básicas"
+            tabClassName="custom-tab-basics"
+          >
+            <div className={styles.sidebarButtonss}>
+              <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Ajuda</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <div>
+                    <h3>
+                      <strong>Instruções de Preenchimento</strong>
+                    </h3>
+                    <p>
+                      Os campos devem ser preenchidos com valores numéricos.
+                      Confira as orientações específicas para cada bloco:
+                    </p>
+
+                    <h4>
+                      <strong>
+                        Bloco 1: Famílias em Acompanhamento pelo PAIF
+                      </strong>
+                    </h4>
+                    <p>
+                      Registre o número total de famílias acompanhadas pelo
+                      programa.
+                    </p>
+
+                    <h4>
+                      <strong>Bloco 2: Atendimentos Particularizados</strong>
+                    </h4>
+                    <p>
+                      Registre o número de atendimentos realizados de forma
+                      individualizada no CRAS.
+                    </p>
+
+                    <h4>
+                      <strong>Bloco 3: Atendimentos Coletivos</strong>
+                    </h4>
+                    <p>
+                      Registre o número de atendimentos realizados coletivamente
+                      no CRAS.
+                    </p>
+
+                    <hr />
+
+                    <h4>
+                      <strong>Detalhamento por Campos</strong>
+                    </h4>
+
+                    <h5>
+                      <strong>A.1 e A.2</strong>
+                    </h5>
+                    <p>
+                      Preencha com valores numéricos que representam o total de
+                      famílias atendidas.
+                    </p>
+
+                    <h5>
+                      <strong>B.1 a B.6</strong>
+                    </h5>
+                    <ul>
+                      <li>
+                        Identificam perfis específicos de famílias atendidas no
+                        CRAS.
+                      </li>
+                      <li>
+                        Nem todas as famílias listadas no item A.2 se encaixam
+                        em B.1 a B.6.
+                      </li>
+                      <li>
+                        Algumas famílias podem se encaixar em mais de uma
+                        condição simultaneamente.
+                      </li>
+                      <li>
+                        <strong>Nota:</strong> A soma dos valores de B.1 a B.6
+                        não precisa ser igual ao valor de A.2.
+                      </li>
+                    </ul>
+
+                    <h5>
+                      <strong>C.1 a C.6</strong>
+                    </h5>
+                    <ul>
+                      <li>
+                        Incluem o número total de famílias/indivíduos atendidos,
+                        independentemente de acompanhamento sistemático pelo
+                        PAIF.
+                      </li>
+                      <li>
+                        Considere todas as famílias ou indivíduos que passaram
+                        pelo CRAS, não apenas os acompanhados diretamente.
+                      </li>
+                    </ul>
+
+                    <h5>
+                      <strong>C.7 a C.9</strong>
+                    </h5>
+                    <ul>
+                      <li>
+                        Referem-se aos auxílios e benefícios eventuais
+                        concedidos ou entregues pelo CRAS.
+                      </li>
+                      <li>
+                        Se não houver concessão ou entrega de benefícios,
+                        preencha com <strong>0 (zero)</strong>.
+                      </li>
+                    </ul>
+
+                    <hr />
+
+                    <h4>
+                      <strong>Outras Observações Importantes</strong>
+                    </h4>
+                    <ul>
+                      <li>
+                        No <strong>Bloco 2</strong>, registre os atendimentos
+                        particularizados.
+                      </li>
+                      <li>
+                        No <strong>Bloco 3</strong>, registre os atendimentos
+                        coletivos.
+                      </li>
+                      <li>
+                        Nos Serviços de Convivência, contabilize os usuários de
+                        acordo com sua idade, independentemente de estarem no
+                        mesmo grupo etário.
+                      </li>
+                    </ul>
+                  </div>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setShowModal(false)}
+                  >
+                    Fechar
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+            </div>
             <Form>
               <Form.Group controlId="formUsername">
-                <Form.Label>Nome *</Form.Label>
+                <Form.Label>Nome do Beneficiário *</Form.Label>
                 <Form.Control
                   type="text"
                   name="username"
@@ -441,6 +653,7 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
                     {formErrors.telefone}
                   </Form.Text>
                 )}
+                {/*
                 <Form.Group controlId="formCategoria">
                   <Form.Label>Categoria</Form.Label>
                   <div
@@ -469,12 +682,16 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
                       </div>
                     ))}
                   </div>
-                </Form.Group>
+                </Form.Group> */}
               </Form.Group>
             </Form>
           </Tab>
 
-          <Tab eventKey="bloco1" title="Bloco I - Famílias PAIF">
+          <Tab
+            eventKey="bloco1"
+            title="Bloco I - Famílias PAIF"
+            style={{ overflow: "auto", maxHeight: "600px" }}
+          >
             <Form className="p-3">
               <h5>A. Volume de famílias em acompanhamento pelo PAIF</h5>
 
@@ -604,7 +821,11 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
             </Form>
           </Tab>
 
-          <Tab eventKey="bloco2" title="Bloco II - Atendimentos CRAS">
+          <Tab
+            eventKey="bloco2"
+            title="Bloco II - Atendimentos CRAS"
+            style={{ overflow: "auto", maxHeight: "600px" }}
+          >
             <Form className="p-3">
               <h5>C. Volume de atendimentos particularizados</h5>
               <Form.Group className="mb-3" controlId="formAtendimentosCRAS">
@@ -705,7 +926,11 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
             </Form>
           </Tab>
 
-          <Tab eventKey="bloco3" title="Bloco III - Coletivos">
+          <Tab
+            eventKey="bloco3"
+            title="Bloco III - Coletivos"
+            style={{ overflow: "auto", maxHeight: "600px" }}
+          >
             <Form className="p-3">
               <h5>D. Volume de atendimentos coletivos</h5>
               <Form.Group
@@ -814,76 +1039,36 @@ function AddEditModal({ show, handleClose, title, item, onSave }) {
                   onChange={handleChange}
                   required
                 />
-              </Form.Group>
-              <Form.Group controlId="formFiliadoCpf">
-                <Form.Label>CPF</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="filiadoCpf"
-                  value={formData.filiadoCpf}
-                  onChange={handleChange}
-                  required
-                />
-              </Form.Group>
-              <Form.Group controlId="formDataNascimento">
-                <Form.Label>Data de Nascimento</Form.Label>
-                <Form.Control
-                  type="date"
-                  name="dataNascimento"
-                  value={formData.dataNascimento}
-                  onChange={handleChange}
-                  required
-                />
-              </Form.Group>
-              <Form.Group controlId="formBeneficiario">
-                <Form.Label>Beneficiário</Form.Label>
-                <div style={searchStyles.inputContainer}>
-                  <Form.Control
-                    type="text"
-                    value={searchTerm}
-                    onChange={handleBeneficiarioSearchChange}
-                    onFocus={() => setIsSearching(true)}
-                    placeholder="Pesquise por Nome, CPF ou NIS"
-                  />
-                  {isSearching &&
-                    searchTerm &&
-                    filteredBeneficiarios.length > 0 && (
-                      <div style={searchStyles.beneficiarioList}>
-                        {filteredBeneficiarios.map((beneficiario) => (
-                          <div
-                            key={beneficiario.id}
-                            onClick={() =>
-                              handleBeneficiarioSelect(beneficiario)
-                            }
-                            style={searchStyles.beneficiarioItem}
-                          >
-                            <div style={searchStyles.beneficiarioInfo}>
-                              <span style={searchStyles.beneficiarioName}>
-                                {beneficiario.username}
-                              </span>
-                              <span style={searchStyles.beneficiarioDetails}>
-                                CPF: {formatCPF(beneficiario.cpf)}
-                                {beneficiario.nis &&
-                                  ` | NIS: ${beneficiario.nis}`}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                </div>
-              </Form.Group>
-            </Form>
+
           </Tab>*/}
         </Tabs>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Cancelar
-        </Button>
-        <Button variant="primary" onClick={handleSubmit}>
-          Salvar
-        </Button>
+        <div className={styles.footerButtonContainer}>
+          <Button variant="secondary" onClick={handleClose}>
+            Cancelar
+          </Button>
+          <Button variant="primary" onClick={handleSubmit}>
+            Salvar
+          </Button>
+
+          <button
+            type="button"
+            className={styles.helpButtons}
+            onClick={() => setShowModal(true)}
+            style={{
+              width: "40px",
+              position: "relative",
+              bottom: "25px",
+              padding: "20px",
+              borderRadius: "30px",
+              padding: "2px 10px",
+              border: "3px solid #fff",
+            }}
+          >
+            ? {/* Ícone de interrogação */}
+          </button>
+        </div>
       </Modal.Footer>
     </Modal>
   );

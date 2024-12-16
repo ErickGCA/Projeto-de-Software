@@ -1,5 +1,26 @@
 import React, { forwardRef } from "react";
 
+const formatMes = (mes) => {
+  // Mapeamento dos meses em inglês para português
+  const mesesEmPortugues = {
+    JANUARY: "Janeiro",
+    FEBRUARY: "Fevereiro",
+    MARCH: "Março",
+    APRIL: "Abril",
+    MAY: "Maio",
+    JUNE: "Junho",
+    JULY: "Julho",
+    AUGUST: "Agosto",
+    SEPTEMBER: "Setembro",
+    OCTOBER: "Outubro",
+    NOVEMBER: "Novembro",
+    DECEMBER: "Dezembro",
+  };
+
+  // Verifica se o mês está no mapeamento
+  return mesesEmPortugues[mes.toUpperCase()] || "____"; // Retorna "____" se o mês não for encontrado
+};
+
 const FormularioCRAS2 = forwardRef(({ dados }, ref) => {
   return (
     <div
@@ -12,7 +33,7 @@ const FormularioCRAS2 = forwardRef(({ dados }, ref) => {
       </div>
 
       <div className="mb-3 text-black">
-        <div className="mb-1">MÊS: {dados?.mes || "____"}</div>
+        <div className="mb-1">MÊS: {formatMes(dados?.mes) || "____"}</div>
       </div>
 
       {/* Bloco I */}

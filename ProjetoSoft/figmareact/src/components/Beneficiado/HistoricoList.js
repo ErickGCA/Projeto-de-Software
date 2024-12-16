@@ -60,16 +60,23 @@ function HistoricoList() {
   const handleDelete = async () => {
     try {
       if (selectedItem) {
-        const response = await api.delete(`/Beneficiario/${selectedItem.id}`);
-        console.log("Response from delete:", response); // Verifique a resposta aqui
+        await api.delete(`/Beneficiario/${selectedItem.id}`);
         const data = await getHistorico();
-        console.log("Updated data after delete:", data); // Verifique os dados atualizados
         setHistoricoData(data);
         handleCloseDeleteModal();
       }
     } catch (error) {
       console.error("Erro ao excluir item:", error);
-      alert("Houve um erro ao excluir o item. Por favor, tente novamente.");
+
+      if (error.response && error.response.status === 400) {
+        // Supondo que o backend retorne uma mensagem apropriada
+        alert(
+          error.response.data.message ||
+            "Não foi possível excluir este beneficiário pois ele possui vínculos associados (benefícios ou filiados)."
+        );
+      } else {
+        alert("Houve um erro ao excluir o item. Por favor, tente novamente.");
+      }
     }
   };
 
@@ -100,6 +107,7 @@ function HistoricoList() {
       } else {
         // Criar um novo benefício
         await api.post("/Beneficiario", item);
+        alert("Beneficiário criado com sucesso!"); // Exibe o alerta simples
       }
 
       // Atualizar os dados e fechar os modais
@@ -143,7 +151,9 @@ function HistoricoList() {
       <AddEditModal
         show={showAddModal || showEditModal}
         handleClose={showAddModal ? handleCloseAddModal : handleCloseEditModal}
-        title={showAddModal ? "Adicionar Beneficiario" : "Editar Beneficiario"}
+        title={
+          showAddModal ? "Adicionar Beneficiário" : "Editar Beneficiário e RMA"
+        }
         item={selectedItem}
         onSave={handleSave}
       />

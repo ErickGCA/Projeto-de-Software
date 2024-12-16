@@ -18,13 +18,23 @@ function HistoricoTable({ data, onEdit, onDelete }) {
     setShowFiliadoModal(true);
 
     try {
-      const response = await api.get("/filiado");
-      const filiados = response.data;
+      const responseFiliados = await api.get("/filiado");
+      const filiados = responseFiliados.data;
+
+      const responseBeneficiarios = await api.get("/Beneficiario");
+      const beneficiarios = responseBeneficiarios.data;
+
+      console.log(filiados, beneficiarios);
 
       // Filtra todos os filiados que pertencem ao beneficiário selecionado
-      const matchingFiliados = filiados.filter(
-        (filiado) => filiado.beneficiario?.id === beneficiary.id
-      );
+      const matchingFiliados = filiados
+        .filter((filiado) => filiado.beneficiario?.id === beneficiary.id)
+        .map((filiado) => ({
+          ...filiado,
+          nomeBeneficiario:
+            beneficiarios.find((b) => b.id === filiado.beneficiario?.id)
+              ?.username || "Desconhecido",
+        }));
 
       if (matchingFiliados.length > 0) {
         setSelectedFiliados(matchingFiliados);
@@ -39,6 +49,27 @@ function HistoricoTable({ data, onEdit, onDelete }) {
     } finally {
       setLoadingFiliado(false);
     }
+  };
+
+  const formatMes = (mes) => {
+    // Mapeamento dos meses em inglês para português
+    const mesesEmPortugues = {
+      JANUARY: "Janeiro",
+      FEBRUARY: "Fevereiro",
+      MARCH: "Março",
+      APRIL: "Abril",
+      MAY: "Maio",
+      JUNE: "Junho",
+      JULY: "Julho",
+      AUGUST: "Agosto",
+      SEPTEMBER: "Setembro",
+      OCTOBER: "Outubro",
+      NOVEMBER: "Novembro",
+      DECEMBER: "Dezembro",
+    };
+
+    // Verifica se o mês está no mapeamento
+    return mesesEmPortugues[mes.toUpperCase()]; // Retorna "____" se o mês não for encontrado
   };
 
   const handleShowAdditionalInfo = (beneficiary) => {
@@ -147,7 +178,10 @@ function HistoricoTable({ data, onEdit, onDelete }) {
               activeKey={activeFiliadoIndex}
               onSelect={(selectedIndex) => setActiveFiliadoIndex(selectedIndex)}
             >
-              <Nav variant="pills">
+              <Nav
+                variant="pills"
+                className={`${styles.customTabLinkContainer}`}
+              >
                 {selectedFiliados.map((filiado, index) => (
                   <Nav.Item key={filiado.id}>
                     <Nav.Link
@@ -158,11 +192,12 @@ function HistoricoTable({ data, onEdit, onDelete }) {
                           : ""
                       }`}
                     >
-                      Filiado #{index + 1}
+                      {filiado.username || `Filiado #${index + 1}`}
                     </Nav.Link>
                   </Nav.Item>
                 ))}
               </Nav>
+
               <Tab.Content>
                 {selectedFiliados.map((filiado, index) => (
                   <Tab.Pane eventKey={index} key={filiado.id}>
@@ -190,9 +225,9 @@ function HistoricoTable({ data, onEdit, onDelete }) {
                         </tr>
                         <tr>
                           <td>
-                            <strong>Código do Filiado</strong>
+                            <strong>Nome do Beneficiário</strong>
                           </td>
-                          <td>{filiado.id}</td>
+                          <td>{filiado.nomeBeneficiario}</td>
                         </tr>
                       </tbody>
                     </Table>
@@ -228,7 +263,7 @@ function HistoricoTable({ data, onEdit, onDelete }) {
                   <td>
                     <strong>Mes</strong>
                   </td>
-                  <td>{selectedBeneficiary.mes}</td>
+                  <td>{formatMes(selectedBeneficiary.mes)}</td>
                 </tr>
                 <tr>
                   <td>

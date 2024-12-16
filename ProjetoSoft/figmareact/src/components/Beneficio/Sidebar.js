@@ -13,7 +13,7 @@ function Sidebar({ onHelpClick, onBackClick }) {
         className={styles.logo}
       />
       <h1 className={styles.sidebarTitle}>Secretaria de Assistência Social</h1>
-      <h2 className={styles.formTitle}>Gerenciar Beneficios</h2>
+      <h2 className={styles.formTitle}>Gerenciar Benefícios</h2>
 
       {/* Botões de ajuda e voltar na sidebar */}
       <div className={styles.sidebarButtons}>

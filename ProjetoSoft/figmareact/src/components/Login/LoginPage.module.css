@@ -18,6 +18,13 @@
   align-items: stretch; /* Para que a sidebar preencha a altura total */
 }
 
+.errorAlert {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  text-align: center;
+}
+
 @media (max-width: 768px) {
   .loginContainer {
     flex-direction: column; /* Empilha o conteúdo no mobile */

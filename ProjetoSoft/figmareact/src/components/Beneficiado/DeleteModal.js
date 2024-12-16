@@ -5,9 +5,11 @@ function DeleteModal({ show, handleClose, onDelete }) {
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Excluir Beneficiario</Modal.Title>
+        <Modal.Title>Excluir Beneficiário</Modal.Title>
       </Modal.Header>
-      <Modal.Body>Tem certeza de que deseja excluir este Beneficiario?</Modal.Body>
+      <Modal.Body>
+        Tem certeza de que deseja excluir este Beneficiário?
+      </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
           Cancelar

@@ -299,13 +299,27 @@
 /* GerenciarBeneficiado.module.css */
 
 .customTabLink {
-  color: #333; /* Cor padrão das abas */
+  color: #b2aeae; /* Cor padrão das abas */
   background-color: transparent;
+  background-color: #cecaca !important; /* Cor de fundo para a aba ativa */
   border: 1px solid #333;
+
   border-radius: 4px;
+  background-color: #c82333;
   padding: 5px 10px;
   margin-right: 5px;
   text-align: center;
+}
+.customTabLinkContainer {
+  margin-bottom: 1rem; /* Espaço de 16px na parte de baixo */
+}
+
+.customTabLink {
+  color: #000000; /* Cor para abas não ativas */
+}
+
+.customTabLink:hover {
+  color: #171717; /* Cor para o hover */
 }
 
 .customTabLinkActive {
@@ -409,4 +423,67 @@
 .helpButton:hover {
   background-color: #e0e0e0;
   border-color: #ccc;
+}
+/* Informações Adicionais */
+button[role="tab"][data-rr-ui-event-key="basics"] {
+  background-color: #ffffff;
+  color: #000000;
+  border: 2px solid #d1d2d4;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+button[role="tab"][data-rr-ui-event-key="basics"]:hover {
+  background-color: #26282a;
+
+  color: #fff;
+}
+
+/* Botão Bloco I - Famílias PAIF */
+button[role="tab"][data-rr-ui-event-key="bloco1"] {
+  background-color: #ffffff;
+  color: #000000;
+  border: 2px solid #d1d2d4;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+button[role="tab"][data-rr-ui-event-key="bloco1"]:hover {
+  background-color: #26282a;
+  color: #ffffff;
+}
+
+/* Botão Bloco II - Atendimentos CRAS */
+button[role="tab"][data-rr-ui-event-key="bloco2"] {
+  background-color: #ffffff;
+  color: #000000;
+  border: 2px solid #d1d2d4;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+button[role="tab"][data-rr-ui-event-key="bloco2"]:hover {
+  background-color: #26282a;
+  color: #ffffff;
+}
+
+/* Botão Bloco III - Coletivos */
+button[role="tab"][data-rr-ui-event-key="bloco3"] {
+  background-color: #ffffff;
+  color: #000000;
+  border: 2px solid #d1d2d4;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+button[role="tab"][data-rr-ui-event-key="bloco3"]:hover {
+  background-color: #26282a;
+  color: #ffffff;
 }

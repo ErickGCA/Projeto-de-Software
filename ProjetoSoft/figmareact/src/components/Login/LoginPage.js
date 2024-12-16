@@ -24,6 +24,10 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    // Reset da mensagem de erro
+    setErrorMessage("");
+
+    // Verifica se os campos estão preenchidos
     if (username.trim() === "" || password.trim() === "") {
       setErrorMessage("Por favor, preencha todos os campos.");
       return;
@@ -50,7 +54,6 @@ const LoginPage = () => {
 
       localStorage.setItem("isAuthenticated", "true");
 
-      // Mantém a lógica original para os perfis existentes (ADM e SECRETARIA)
       if (userResponse.data.profile.includes("ADM")) {
         navigate("/menuassistente", { replace: true });
       } else if (userResponse.data.profile.includes("SECRETARIA")) {
@@ -62,9 +65,10 @@ const LoginPage = () => {
       }
     } catch (err) {
       console.log(err);
-      setError("Usuário ou senha inválidos");
+      setErrorMessage("Usuário ou senha inválidos.");
     }
   };
+
   return (
     <main className={styles.loginPage}>
       <div className={styles.loginContainer}>
@@ -103,7 +107,6 @@ const LoginPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              {/* Ícone para alternar visibilidade da senha */}
               <span
                 className={styles.passwordToggleIcon}
                 onClick={togglePasswordVisibility}
@@ -113,12 +116,17 @@ const LoginPage = () => {
             </div>
 
             <div className={styles.rememberMe}>
-              <input type="checkbox" id="rememberMe" />
+              <input
+                type="checkbox"
+                id="rememberMe"
+                checked={rememberMeChecked}
+                onChange={(e) => setRememberMeChecked(e.target.checked)}
+              />
               <label htmlFor="rememberMe">Lembrar de mim</label>
             </div>
 
             {errorMessage && (
-              <p className={styles.errorMessage}>{errorMessage}</p>
+              <p className={styles.errorAlert}>{errorMessage}</p>
             )}
             <button type="submit" className={styles.submitButton}>
               ENTRAR

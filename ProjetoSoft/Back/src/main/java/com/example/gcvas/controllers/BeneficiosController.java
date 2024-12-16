@@ -55,7 +55,7 @@ public class BeneficiosController {
             obj.setBeneficiado(new HashSet<>());
         }
 
-        // Agora, associamos os beneficiários
+        // Associe os beneficiários a partir dos IDs enviados
         Set<Beneficiario> beneficiarios = obj.getBeneficiado().stream()
                 .map(beneficiario -> beneficiariosService.findByid(beneficiario.getId()))
                 .collect(Collectors.toSet());

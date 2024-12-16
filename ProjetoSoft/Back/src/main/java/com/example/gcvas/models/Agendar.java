@@ -34,9 +34,7 @@ public class Agendar {
     @Size(min = 2, max = 50)
     private String username;
 
-    @Column(name = "Telefone", unique = true, nullable = false, insertable = true, updatable = true, length = 11)
-    @NotBlank
-    @Size(min = 8, max = 11)
+    @Column(name = "Telefone", unique = false, nullable = true, insertable = true, updatable = true)
     private String telefone;
 
     @Column(name = "Setor", unique = false, nullable = false, insertable = true, updatable = true, length = 20)

@@ -131,17 +131,72 @@ const AddEditModal = ({ show, handleClose, title, item, onSave }) => {
     return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
   };
 
+  const isValidCPF = (cpf) => {
+    cpf = cpf.replace(/[^\d]+/g, ""); // Remove caracteres não numéricos
+    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+
+    let soma = 0,
+      resto;
+
+    // Validação do primeiro dígito verificador
+    for (let i = 1; i <= 9; i++) soma += parseInt(cpf.charAt(i - 1)) * (11 - i);
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.charAt(9))) return false;
+
+    soma = 0;
+
+    // Validação do segundo dígito verificador
+    for (let i = 1; i <= 10; i++)
+      soma += parseInt(cpf.charAt(i - 1)) * (12 - i);
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.charAt(10))) return false;
+
+    return true;
+  };
+
   const handleSubmit = () => {
-    // Verifica se os campos obrigatórios estão preenchidos
-    if (
-      !formData.username ||
-      !formData.cpf ||
-      !formData.data ||
-      !formData.beneficiario
-    ) {
-      alert("Por favor, preencha todos os campos obrigatórios.");
+    // Verifica os campos obrigatórios individualmente
+    if (!formData.username) {
+      alert("Por favor, preencha o campo de nome de usuário.");
       return;
     }
+
+    if (!formData.cpf) {
+      alert("Por favor, preencha o campo de CPF.");
+      return;
+    }
+
+    if (!isValidCPF(formData.cpf)) {
+      alert(
+        "CPF inválido ou já cadastrado. Por favor, insira um número de CPF válido."
+      );
+      return;
+    }
+
+    if (!formData.data) {
+      alert("Por favor, preencha a data.");
+      return;
+    }
+
+    // Validação de data: A data de nascimento não pode ser igual ou posterior ao dia de hoje
+    const dataNascimento = new Date(formData.data);
+    const dataHoje = new Date();
+    dataHoje.setHours(0, 0, 0, 0); // Zera a hora, minuto, segundo e milissegundo de hoje
+
+    if (dataNascimento >= dataHoje) {
+      alert("A data de nascimento deve ser válida.");
+      return;
+    }
+
+    if (!formData.beneficiario) {
+      alert("Por favor, selecione um beneficiário.");
+      return;
+    }
+
+    // Continuação do envio do formulário
+    alert("Filiado criado com sucesso!");
 
     // Cria o objeto de dados a ser enviado
     const submissionData = {

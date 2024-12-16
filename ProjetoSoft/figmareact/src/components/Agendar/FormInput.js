@@ -23,7 +23,7 @@ const FormInput = ({
           value={value}
           onChange={onChange}
           className={styles.inputField}
-          required
+          required={label.includes("*")} // Problema: 'label' não está definido
           placeholder={placeholder}
         />
       </div>

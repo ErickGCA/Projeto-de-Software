@@ -34,7 +34,13 @@ public class CategoriaController {
     @GetMapping("/{id}")
     public ResponseEntity<Categoria> findById(@PathVariable Long id) {
         Categoria categoria = categoriaService.findById(id);
-        return ResponseEntity.ok().body(categoria);
+        if (categoria != null) {
+            // Aqui a lista de beneficiários será automaticamente carregada devido ao
+            // relacionamento @ManyToMany
+            return ResponseEntity.ok().body(categoria);
+        } else {
+            return ResponseEntity.notFound().build(); // Retorna 404 caso a categoria não seja encontrada
+        }
     }
 
     @PostMapping
